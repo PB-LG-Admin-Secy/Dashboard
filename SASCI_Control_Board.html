@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SASCI 2026-27</title><style>
+/* ── type scale ────────────────────────────────────
+   t1 34  dashboard title
+   t2 14  section heading (green bar, uppercase)
+   t3 13  body / table
+   t4 11  labels, captions, eyebrows (uppercase, tracked)
+   metrics: hero 30, mid 20, unit always ~45% of its number
+   ─────────────────────────────────────────────────── */
+:root{
+  --dark:#34613A; --dark-d:#2A4E2F; --lime:#B9CD46; --green:#5C9E4F; --teal:#6BBDB6;
+  --amber:#D6A63C; --red:#BC5140; --track:#E6E9E3; --line:#DCE4D8; --line2:#EBF0E8;
+  --ink:#25322A; --soft:#6C7A6B; --bg:#F5F7F3; --panel:#FFF;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:Aptos,"Aptos Display","Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  font-size:13px;line-height:1.45;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+h1,h2{margin:0;font-weight:600}
+.wrap{max-width:1150px;margin:0 auto;padding:18px 16px 44px}
+
+/* masthead */
+.title{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--dark);
+  padding:18px 20px 16px;text-align:center;margin-bottom:14px;position:relative}
+.title .dept{color:var(--soft);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+.title h1{color:var(--dark);font-size:34px;letter-spacing:.01em;line-height:1.05;margin:6px 0 5px;font-weight:600}
+.title .sub{color:var(--soft);font-size:12px;letter-spacing:.02em}
+.title .asof{position:absolute;right:20px;top:18px;font-size:11px;color:var(--soft);text-align:right;line-height:1.5}
+.title .asof b{display:block;color:var(--dark);font-size:12px;font-weight:600}
+
+/* panels */
+.box{background:var(--panel);border:1px solid var(--line);margin-bottom:14px}
+.box>h2{background:var(--dark);color:#fff;font-size:14px;letter-spacing:.08em;text-transform:uppercase;
+  padding:9px 16px;text-align:center;font-weight:600}
+.box .bd{padding:18px}
+.grid{display:grid;gap:14px}
+.gh{grid-template-columns:1fr 1fr}
+
+/* dials */
+.rings{display:flex;gap:16px;align-items:center;justify-content:space-around;flex-wrap:wrap}
+.rb{text-align:center;flex:1;min-width:88px}
+.dial{position:relative;width:88px;height:88px;margin:0 auto}
+.dial svg{width:100%;height:100%;display:block;overflow:visible}
+.dial .tk{fill:none;stroke:var(--track);stroke-width:8}
+.dial .fl{fill:none;stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+.dial .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;line-height:1}
+.dial .val b{font-size:20px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.dial .val i{font-size:10px;font-style:normal;color:var(--soft);font-weight:500;
+  align-self:flex-start;margin-top:26px;margin-left:1px}
+.rb .lb{font-size:11px;color:var(--soft);margin-top:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.rb.hero{flex:0 0 auto}
+.rb.hero .dial{width:132px;height:132px}
+.rb.hero .dial .tk,.rb.hero .dial .fl{stroke-width:7}
+.rb.hero .val b{font-size:30px}
+.rb.hero .val i{font-size:14px;margin-top:34px;margin-left:2px}
+.rb.hero .lb{font-size:11px;color:var(--dark);font-weight:600}
+.c-lime .fl{stroke:var(--lime)}.c-green .fl{stroke:var(--green)}.c-teal .fl{stroke:var(--teal)}
+.c-amber .fl{stroke:var(--amber)}.c-red .fl{stroke:var(--red)}.c-grey .fl{stroke:#B6BCB4}
+
+/* stat stack beside a hero dial */
+.split{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:0}
+.stack .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  padding:9px 0;border-bottom:1px solid var(--line2)}
+.stack .row:last-child{border-bottom:0}
+.stack .row span{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.stack .row b{font-size:20px;font-weight:600;color:var(--ink);white-space:nowrap}
+.stack .row b small{font-size:11px;font-weight:500;color:var(--soft);margin-right:1px}
+.panel-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.panel-foot div{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.panel-foot b{display:block;font-size:18px;color:var(--ink);text-transform:none;letter-spacing:0;margin-top:3px;font-weight:600}
+
+/* part tiles */
+.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--track);
+  padding:11px 9px 12px;cursor:pointer;text-align:center;font:inherit;color:inherit;transition:background .12s}
+.tile:hover{background:#FAFCF8}
+.tile[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--dark)}
+.tile.s-green{border-top-color:var(--green)}.tile.s-teal{border-top-color:var(--teal)}
+.tile.s-amber{border-top-color:var(--amber)}.tile.s-red{border-top-color:var(--red)}
+.tile.s-grey{border-top-color:#B6BCB4}
+.tile .rn{font-size:11px;font-weight:600;color:var(--dark);text-transform:uppercase;letter-spacing:.07em}
+.tile .nm{font-size:11px;color:var(--soft);margin:6px 0 8px;line-height:1.35;height:44px;overflow:hidden}
+.tile .sc{font-size:20px;font-weight:600}
+.tile .amt{font-size:11px;color:var(--soft);margin-top:3px;font-weight:500}
+
+/* detail */
+.detail{border:1px solid var(--line);border-top:none;background:#FAFCF8;padding:18px 20px;display:none;margin-top:-14px;margin-bottom:14px}
+.detail.on{display:block}
+.detail h3{margin:0;font-size:16px;font-weight:600;color:var(--dark)}
+.detail .meta{font-size:11px;color:var(--soft);margin:4px 0 14px;text-transform:uppercase;letter-spacing:.05em}
+.detail .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.detail h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dark);margin:0 0 7px;font-weight:600}
+.detail ul{margin:0 0 4px;padding-left:16px}
+.detail li{font-size:13px;margin-bottom:6px;line-height:1.45}
+
+/* bars */
+.brow{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center;padding:6px 0;font-size:13px}
+.brow .k{color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .t{background:var(--track);height:14px}.brow .t i{display:block;height:100%}
+.brow .v{font-weight:600;min-width:44px;text-align:right}
+.f-green{background:var(--green)}.f-red{background:var(--red)}.f-lime{background:var(--lime)}
+.sub-h{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dark);font-weight:600;margin-bottom:8px}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line2);text-align:left}
+thead th{background:#F1F5EE;border-bottom:1px solid var(--dark);font-size:11px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--dark);font-weight:600;position:sticky;top:0;cursor:pointer;white-space:nowrap}
+th.num,td.num{text-align:right}tbody tr:hover{background:#FAFCF8}
+.tw{max-height:340px;overflow:auto;border:1px solid var(--line)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{font:inherit;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:500;
+  padding:5px 11px;background:var(--panel);border:1px solid var(--line);cursor:pointer;color:var(--soft)}
+.chips button[aria-pressed="true"]{background:var(--dark);color:#fff;border-color:var(--dark)}
+
+/* next actions */
+.win{display:grid;grid-template-columns:1fr 150px;gap:16px;padding:11px 0;
+  border-bottom:1px solid var(--line2);align-items:center}
+.win .a{font-size:13px;line-height:1.45}
+.win .a small{display:block;color:var(--soft);font-size:11px;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.win .g{text-align:right;font-size:16px;font-weight:600;color:var(--green)}
+.win .g small{display:block;font-weight:500;color:var(--soft);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.win.hd{padding:0 0 7px;border-bottom:1px solid var(--dark)}
+.win.hd .a,.win.hd .g{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dark);font-weight:600}
+.note{margin-top:12px;font-size:11px;color:var(--soft);line-height:1.5}
+
+/* timelines */
+.cal .r{display:grid;grid-template-columns:110px 1fr 150px;gap:16px;padding:10px 0;
+  border-bottom:1px solid var(--line2);font-size:13px;align-items:baseline}
+.cal .r:last-child{border-bottom:0}
+.cal .d{font-weight:600;font-size:13px}
+.cal .d small{display:block;font-weight:500;color:var(--soft);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.cal .r.crit .d{color:var(--red)}
+.cal .ow{color:var(--soft);font-size:11px;text-align:right;text-transform:uppercase;letter-spacing:.04em}
+
+/* connect */
+.cx{background:var(--panel);border:1px solid var(--line);margin-bottom:14px}
+.cx>summary{cursor:pointer;padding:10px 16px;color:var(--soft);font-weight:500;list-style:none;
+  font-size:11px;text-transform:uppercase;letter-spacing:.07em}
+.cx>summary::-webkit-details-marker{display:none}
+.cx>summary:before{content:"\25B8  "}.cx[open]>summary:before{content:"\25BE  "}
+.cx .cb{padding:4px 16px 16px;border-top:1px solid var(--line2)}
+.cx input{width:100%;max-width:560px;font:inherit;font-size:12px;padding:7px 10px;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.cx button{margin-top:9px;font:inherit;font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+  font-weight:600;padding:7px 18px;background:var(--dark);color:#fff;border:0;cursor:pointer}
+.cx .msg{font-size:12px;min-height:16px;margin:9px 0 0}
+.cx .msg.good{color:var(--green);font-weight:500}.cx .msg.bad{color:var(--red);font-weight:500}
+footer{font-size:11px;color:var(--soft);text-align:center;padding-top:6px;letter-spacing:.04em}
+
+@media (max-width:900px){
+  .gh,.detail .cols,.split{grid-template-columns:1fr}
+  .split{justify-items:center;gap:16px}
+  .tiles{grid-template-columns:repeat(3,1fr)}
+  .title h1{font-size:26px}.title .asof{position:static;text-align:center;margin-top:8px}
+  .cal .r,.win,.brow{grid-template-columns:1fr;gap:4px}
+  .cal .ow,.win .g{text-align:left}
+}
+@media print{body{background:#fff}.tw{max-height:none}.cx,.chips{display:none}}
+
+.tile .lead{font-size:10px;color:var(--soft);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.tile.na{opacity:.5}
+.detail .gl{font-size:11px;color:var(--soft);margin-top:12px;padding-top:9px;border-top:1px solid var(--line2);line-height:1.5}
+</style></head><body>
+<div class="wrap">
+<div class="title">
+  <div class="asof"><b id="asof">&mdash;</b><span id="srcline"></span></div>
+  <div class="dept">Department of Local Government &middot; Punjab</div>
+  <h1>SASCI 2026-27</h1>
+  <div class="sub">Reform Compliance &amp; Capital Expenditure</div>
+</div>
+
+<details class="cx" id="connect"><summary>Connect sheet</summary><div class="cb">
+  <input id="linkbox" type="url" placeholder="Google Sheet link">
+  <button id="loadlink" type="button">Connect</button>
+  <p class="msg" id="cmsg"></p>
+</div></details>
+
+<div class="grid gh">
+  <div class="box"><h2>Scheme Profile</h2><div class="bd"><div class="rings" id="p-money"></div></div></div>
+  <div class="box"><h2>Reform Compliance</h2><div class="bd"><div class="rings" id="p-comp"></div></div></div>
+</div>
+
+<div class="box"><h2>Timelines</h2><div class="bd"><div class="cal" id="cal"></div></div></div>
+
+<div class="box"><h2>Part-wise Status</h2><div class="bd"><div class="tiles" id="tiles"></div></div></div>
+<div class="detail" id="detail"></div>
+
+<div class="box"><h2>ULB Expenditure</h2><div class="bd">
+  <div class="rings" id="r-money"></div>
+  <div style="margin-top:18px" id="b-unspent"></div>
+  <div class="chips" id="chips" style="margin-top:12px">
+    <button data-f="all" aria-pressed="true">All</button>
+    <button data-f="stalled" aria-pressed="false">Under 25%</button>
+    <button data-f="behind" aria-pressed="false">Behind pace</button>
+    <button data-f="big" aria-pressed="false">Unspent &gt; 3 Cr</button>
+    <button data-f="done" aria-pressed="false">Near complete</button></div>
+  <div class="tw"><table id="ulbt"><thead><tr>
+    <th data-k="name">ULB</th><th class="num" data-k="alloc">Allocation</th><th class="num" data-k="exp">Utilised</th>
+    <th class="num" data-k="pct">%</th><th class="num" data-k="unspent">Balance</th>
+    <th class="num" data-k="need">Req./month</th><th class="num" data-k="mult">Lift</th></tr></thead>
+    <tbody id="ulbb"></tbody></table></div></div></div>
+
+<div class="box"><h2>Next Actions</h2><div class="bd"><div id="wins"></div></div></div>
+
+<div class="box"><h2>Nodal Officer Progress</h2><div class="bd" id="owners"></div></div>
+
+<footer>Figures in &#8377; crore.</footer>
+</div>
+
+<script type="text/plain" id="seed">item_id,part,section,checklist_item,owner_role,owner_name,owner_mobile,status,evidence_link,due_date,blocker,next_action,last_updated,updated_by
+IV-A-01,IV,A. Works Management System (WAMIS/PWIMS),WAMIS notified/approved by competent authority and operational for all engineering depts,CE (Chaudhary),,,Met,,,,,,
+IV-A-02,IV,A. Works Management System (WAMIS/PWIMS),All organisations and user offices onboarded and mapped for workflow and accounting,CE (Chaudhary),,,Met,,,,,,
+IV-A-03,IV,A. Works Management System (WAMIS/PWIMS),"Budget management, sanctions and expenditure-vs-allotment control through WAMIS or via IFMIS integration",CE (Chaudhary),,,Not started,,,,,,
+IV-A-04,IV,A. Works Management System (WAMIS/PWIMS),Planning of works carried out and updated Works Master maintained,CE (Chaudhary),,,Met,,,,,,
+IV-A-05,IV,A. Works Management System (WAMIS/PWIMS),Administrative Approval and Technical Sanctions captured in WAMIS,CE (Chaudhary),,,Met,,,,,,
+IV-A-06,IV,A. Works Management System (WAMIS/PWIMS),Estimates and BOQ prepared and captured for initiating tendering via e-Procurement,CE (Chaudhary),,,Met,,,,,,
+IV-A-07,IV,A. Works Management System (WAMIS/PWIMS),"Award of contract and agreement details captured, incl. timelines and auto-alerts",CE (Chaudhary),,,Partial,,,,,,
+IV-A-08,IV,A. Works Management System (WAMIS/PWIMS),"All modules operational - planning, approval, tendering, execution, billing, MB, RA bills, deviation, royalty, MPR",CE (Chaudhary),,,Partial,,,,,,
+IV-A-09,IV,A. Works Management System (WAMIS/PWIMS),Stages of works captured through e-Measurement Book and bills prepared through WAMIS,CE (Chaudhary),,,Not started,,,,,,
+IV-A-10,IV,A. Works Management System (WAMIS/PWIMS),"Payment made through IFMIS against WAMIS bills, vouchers generated for monthly accounts",CE (Chaudhary),,,Not started,,,,,,
+IV-A-11,IV,A. Works Management System (WAMIS/PWIMS),Validation and automated monitoring for reconciliation of payments and physical progress,CE (Chaudhary),,,Not started,,,,,,
+IV-A-12,IV,A. Works Management System (WAMIS/PWIMS),User access with DSC and encryption of sensitive data ensured,CE (Chaudhary),,,Not started,,,,,,
+IV-A-13,IV,A. Works Management System (WAMIS/PWIMS),Field e-Measurement synced real time with GPS coordinates of measurement site,CE (Chaudhary),,,Partial,,,,,,
+IV-A-14,IV,A. Works Management System (WAMIS/PWIMS),Logs and audit trails maintained completely for reconstruction of events at audit,CE (Chaudhary),,,Met,,,,,,
+IV-B-01,IV,B. e-Procurement System,"e-Procurement notified/approved and operational for goods, services and works",Sr. Manager IT,,,Met,,,,,,
+IV-B-02,IV,B. e-Procurement System,All Departments/DDOs/Tender Inviting Authorities registered with PAN/mobile/bank de-duplication,Sr. Manager IT,,,Met,,,,,,
+IV-B-03,IV,B. e-Procurement System,Verified vendors onboarded; blacklisted and duplicate registrations system-detected and blocked,Sr. Manager IT,,,Not started,,,,,,
+IV-B-04,IV,B. e-Procurement System,Tender creation and publishing by buyer; bids submitted only through the system,Sr. Manager IT,,,Met,,,,,,
+IV-B-05,IV,B. e-Procurement System,TIA officials log in only using DSC and mandatorily publish tenders through the system,Sr. Manager IT,,,Met,,,,,,
+IV-B-06,IV,B. e-Procurement System,All corrigenda published through the system with sufficient extension time and trails maintained,Sr. Manager IT,,,Met,,,,,,
+IV-B-07,IV,B. e-Procurement System,Registered bidders submit bids using authorised DSC with no manual interaction provisions,Sr. Manager IT,,,Met,,,,,,
+IV-B-08,IV,B. e-Procurement System,"All tender types (single bid, two-bid, two-stage) mapped and in use by TIAs",Sr. Manager IT,,,Met,,,,,,
+IV-B-09,IV,B. e-Procurement System,Bid confidentiality in transit and at rest; automatic PKI encryption on submission,Sr. Manager IT,,,Met,,,,,,
+IV-B-10,IV,B. e-Procurement System,Exemptions for MSEs/Start-ups automatically allowed; State-specific rules mapped,Sr. Manager IT,,,Not started,,,,,,
+IV-B-11,IV,B. e-Procurement System,Bid opening and technical evaluation automated with no manual processes outside the system,Sr. Manager IT,,,Not started,,,,,,
+IV-B-12,IV,B. e-Procurement System,Bidders able to participate in technical bid evaluation process online,Sr. Manager IT,,,Not started,,,,,,
+IV-B-13,IV,B. e-Procurement System,"Only authorised personnel with DSC decrypt price bids, after technical evaluation completes",Sr. Manager IT,,,Met,,,,,,
+IV-B-14,IV,B. e-Procurement System,"System-generated comparative statement (L1) used, minimising manual intervention",Sr. Manager IT,,,Met,,,,,,
+IV-B-15,IV,B. e-Procurement System,Negotiations provisioned and held only with L1 bidder through the system with immutable logs,Sr. Manager IT,,,Not started,,,,,,
+IV-B-16,IV,B. e-Procurement System,Contract/Work Order/Award carried out only through the system within bid validity period,Sr. Manager IT,,,Not started,,,,,,
+IV-B-17,IV,B. e-Procurement System,Each tender status and stage updated in real time with detailed audit logs,Sr. Manager IT,,,Met,,,,,,
+IV-B-18,IV,B. e-Procurement System,Award of contract and post-contract processes automated with no manual processes outside,Sr. Manager IT,,,Met,,,,,,
+IV-B-19,IV,B. e-Procurement System,Pre-requisites such as receipt of Performance Bank Guarantee ensured before issue of PO/Contract,Sr. Manager IT,,,Not started,,,,,,
+IV-B-20,IV,B. e-Procurement System,"Final contract generated and digitally signed by all stakeholders, or signed contract uploaded",Sr. Manager IT,,,Met,,,,,,
+IV-B-21,IV,B. e-Procurement System,"All critical actions (publishing, submission, opening, evaluation, negotiation, award) use Class-III DSC",Sr. Manager IT,,,Met,,,,,,
+IV-B-22,IV,B. e-Procurement System,"System audit log is immutable, secure and tamper-proof",Sr. Manager IT,,,Met,,,,,,
+IV-B-23,IV,B. e-Procurement System,Segregation of Duties ensured across the procurement workflow,Sr. Manager IT,,,Not started,,,,,,
+IV-B-24,IV,B. e-Procurement System,Logs capture IP and MAC address with user timestamp for all tender events,Sr. Manager IT,,,Not started,,,,,,
+IV-C-01,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)","Real-time IFMIS-WAMIS integration planned, notified and operational for all planned modules",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-02,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)","Master data synced - budget, allotment, sanction, works/assets, work orders, bills, vouchers, heads of account, UCs",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-03,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",Vendor master data and departmental users maintained and synced between both systems,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-04,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)","BOQs, tenders, work orders, contractor details and payments in WAMIS integrated with e-Procurement",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-05,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",Events from both systems maintained in combined immutable and tamper-free audit logs,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-06,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",Segregation of Duties enforced for authenticated interactions between the two systems,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-07,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",Historical data of both systems migrated and available for MIS covering legacy records,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-08,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",DDOs and Treasury Officers process bills and payments without switching between systems,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-09,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",MIS reports and Monthly/Final Accounts generated accurately without manual intervention,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-C-10,IV,"C. IFMIS-WAMIS live integration (Rs.50 Cr, mandatory)",Same user restricted from originating and approving linked actions across both systems,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-01,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)","Real-time IFMIS-e-Procurement integration planned, notified and operational for goods, services and works",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-02,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",Vendor database and profile synced in real time from a single source for consistency and uniqueness,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-03,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",Tender budget chart of accounts in e-Procurement mapped to IFMIS budget/demand heads,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-04,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)","Budget, allotment and sanctions in IFMIS integrated so tenders are flagged before publication",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-05,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)","e-Procurement validates funds, Administrative Approval, Technical Sanction and BOQ before publishing tenders",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-06,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)","Tender fee, EMD and guarantees collected/refunded shared online with IFMIS for reconciliation",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-07,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",Work Orders/Contracts in e-Procurement integrated with IFMIS including timelines for bill processing,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-08,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",Bill processing in e-Procurement flows into IFMIS bills/payment modules without manual intervention,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-09,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",Payment status and voucher details in IFMIS shared automatically back to e-Procurement,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-10,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)","Audit logs and trails captured in consolidated, referenced, immutable records",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-11,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",MIS reports and Monthly/Final Accounts generated accurately without manual intervention,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-12,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)","Contract value, timelines and vendor obligations available at bill processing stage",Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-D-13,IV,"D. IFMIS-e-Procurement live integration (Rs.50 Cr, mandatory)",End-to-end traceability from tender ID to voucher/payment ID provisioned and generated,Sr. Manager IT,,,Not started,,,,Blocked on LG-IFMS release. Obtain dated vendor plan.,,
+IV-E-01,IV,"E. Digitisation coverage - DDOs (Rs.50 Cr, mandatory)",All (100%) DDOs onboarded on IFMIS,DCFA,,,Not started,,,,SECTION RETURNED BLANK in the CS format. Answer before next review.,,
+IV-E-02,IV,"E. Digitisation coverage - DDOs (Rs.50 Cr, mandatory)",All DDO transactions processed exclusively through IFMIS with no parallel manual bill/sanction registers,DCFA,,,Not started,,,,SECTION RETURNED BLANK in the CS format. Answer before next review.,,
+IV-E-03,IV,"E. Digitisation coverage - DDOs (Rs.50 Cr, mandatory)",Authentication and authorisation enforced with MFA and password policy; account lifecycle managed by authorised admins,DCFA,,,Not started,,,,SECTION RETURNED BLANK in the CS format. Answer before next review.,,
+I-01,I,Untied capital funds (Rs.337 Cr outlay),"Weekly drawdown call held with Ludhiana, Jalandhar, Kapurthala and Sangrur",DCFA,,,Not started,,2027-03-31,,Carries Rs.76.8 Cr of Rs.137.26 Cr unspent,,
+I-02,I,Untied capital funds (Rs.337 Cr outlay),Dated drawdown plan obtained from MC Jalandhar or re-appropriation initiated,DCFA,,,Not started,,2027-03-31,,Needs 35x lift on own run rate - not achievable without intervention,,
+I-03,I,Untied capital funds (Rs.337 Cr outlay),MC Kapurthala drawdown started (currently Rs.0 against Rs.5.83 Cr),DCFA,,,Not started,,2027-03-31,,,,
+I-04,I,Untied capital funds (Rs.337 Cr outlay),10 ULBs with bank-level account issues resolved,DCFA,,,Partial,,2027-03-31,,A ULB that cannot receive money cannot spend it,,
+I-05,I,Untied capital funds (Rs.337 Cr outlay),2 ULBs with PAN number issues resolved,DCFA,,,Partial,,2027-03-31,,,,
+I-06,I,Untied capital funds (Rs.337 Cr outlay),"Allocation of 3 cancelled projects re-appropriated (Khanauri, Cheema, Longowal)",DCFA,,,Not started,,2027-03-31,,Stop carrying these as shortfall,,
+I-07,I,Untied capital funds (Rs.337 Cr outlay),Weekly expenditure refresh from PFMS/LG-IFMS into this register,DCFA,,,Not started,,2027-03-31,,Replaces night-before-meeting compilation,,
+II-01,II,State share of CSS and central projects,Gap between Rs.425 Cr identified and Rs.200 Cr indicated by FD settled in writing,PD-AMRUT,,,Not started,,,,"Which projects fall out, and who decides",,
+II-02,II,State share of CSS and central projects,Utilisation Certificate in Form 12-B prepared on PFMS for second instalment,PD-AMRUT,,,Not started,,,,"Triggered at 75% use of first instalment - start now, not later",,
+II-03,II,State share of CSS and central projects,Project list for AMRUT 2.0 (Rs.359 Cr) and SBM (Rs.66 Cr) confirmed with FD,PD-AMRUT,,,Partial,,,,,,
+III-01,III,Capital expenditure growth incentive,DoLG April-September 2026 capex figures sent to FD with 2025-26 comparison,DCFA,,,Not started,,2026-09-30,,MEASUREMENT WINDOW CLOSES 30.09.2026,,
+III-02,III,Capital expenditure growth incentive,Written confirmation obtained on whether ULB/MDF capex counts toward State figure,DCFA,,,Not started,,2026-09-30,,"Settle now, not in March",,
+III-03,III,Capital expenditure growth incentive,FD communication on funds available under Part III obtained,DCFA,,,Not started,,2026-09-30,,,,
+V-01,V,Role not mapped to DoLG,Written confirmation from FD that DoLG has no role under this Part,DCFA,,,Not started,,,,An assumed exemption is not an exemption. Record the reply.,,
+VII-01,VII,Role not mapped to DoLG,Written confirmation from FD that DoLG has no role under this Part,DCFA,,,Not started,,,,An assumed exemption is not an exemption. Record the reply.,,
+X-01,X,Role not mapped to DoLG,Written confirmation from FD that DoLG has no role under this Part,DCFA,,,Not started,,,,An assumed exemption is not an exemption. Record the reply.,,
+VI-01,VI,Right of Way Rules 2024,RoW application register maintained with filing and disposal dates for every application,CTP (LG),,,Not started,,2026-11-15,,Performance is fine; proof is not,,
+VI-02,VI,Right of Way Rules 2024,Average disposal time computed and recorded as a live number,CTP (LG),,,Not started,,2026-11-15,,,,
+VI-03,VI,Right of Way Rules 2024,Fortnightly return received from every MC Commissioner and ADC through 15.11.2026,CTP (LG),,,Not started,,2026-11-15,,,,
+VI-04,VI,Right of Way Rules 2024,ULB compliance confirmations against CTP letter dated 14.08.2026 collected and filed,CTP (LG),,,Partial,,2026-11-15,,,,
+VI-05,VI,Right of Way Rules 2024,Tail risk monitored - late-filed applications in Oct/Nov can still breach 45 days inside window,CTP (LG),,,Not started,,2026-11-15,,"Watch the tail, not just the average",,
+VIII-01,VIII,Livestock - DoLG scope (stray dogs),Realistic September sterilisation figure communicated to AHD in writing,DD / Asst. Commissioner (Jain),,,Not started,,2026-09-30,,Protects the other 160 marks,,
+VIII-02,VIII,Livestock - DoLG scope (stray dogs),Root cause of flat monthly rate established (ABC centre capacity vs effort),DD / Asst. Commissioner (Jain),,,Not started,,2026-09-30,,Rate is 3397/3564/3435/3295 - flat and falling,,
+VIII-03,VIII,Livestock - DoLG scope (stray dogs),"Dog sterilisation against 62,000 target",DD / Asst. Commissioner (Jain),,,Partial,,2026-09-30,,"13,691 done (22.08%). 70% floor needs 8.7x lift in one month",,
+VIII-04,VIII,Livestock - DoLG scope (stray dogs),"Dog vaccination against 62,000 target",DD / Asst. Commissioner (Jain),,,Partial,,2026-09-30,,"18,925 done (30.52%)",,
+VIII-05,VIII,Livestock - DoLG scope (stray dogs),ABC centre capacity expansion proposal prepared for next FY,DD / Asst. Commissioner (Jain),,,Not started,,2026-09-30,,September is too late to fix capacity,,
+VIII-06,VIII,Livestock - DoLG scope (stray dogs),DoLG inputs submitted for DAHD report,DD / Asst. Commissioner (Jain),,,Not started,,2026-09-30,,,,
+IX-01,IX,SNA SPARSH / financial management,Full SNA SPARSH implementation confirmation completed and filed,"GM (F&A), PMIDC",,,Partial,,,,Closest Part to complete - do not let it drift,,
+IX-02,IX,SNA SPARSH / financial management,Bank lists reconciled against the closure certificate,"GM (F&A), PMIDC",,,Not started,,,,ICICI letter lists accounts closed 11-Dec-25 and 4-Mar-26 not on the certificate,,
+IX-03,IX,SNA SPARSH / financial management,Named officer designated to receive and settle post-closure interest demand drafts,"GM (F&A), PMIDC",,,Not started,,,,Interest after closure will not reflect on PFMS - unsettled DDs reopen as audit objections,,
+IX-04,IX,SNA SPARSH / financial management,Closure certificate submitted to Finance Department,"GM (F&A), PMIDC",,,Partial,,,,,,
+IX-05,IX,SNA SPARSH / financial management,"14 SNA account closures verified against Axis, HDFC and ICICI confirmations","GM (F&A), PMIDC",,,Met,,,,,,
+XI-01,XI,Fiscal discipline,Monitored item - confirm no DoLG dependency arises,DCFA,,,Not applicable,,,,"One line, one owner, no work. Prevents rediscovery in January.",,
+XII-01,XII,CBG sector reforms,Part XII scoring metric obtained from FD - commissioned capacity or milestones?,CE (Rai),,,Not started,,,,ASK THIS FIRST. It decides whether this Part deserves effort or a holding line.,,
+XII-02,XII,CBG sector reforms,Remaining cities of the 17 identified under SBM 2.0 named and assigned,APD (SWM),,,Not started,,,,8 of 17 named so far,,
+XII-03,XII,CBG sector reforms,CBG plant milestone status - Jalandhar,APD (SWM),,,Partial,,,,"MoU signed 29.07.2026, DFS underway",,
+XII-04,XII,CBG sector reforms,CBG plant milestone status - Patiala,APD (SWM),,,Partial,,,,"MoU signed 11.08.2026, DFS underway",,
+XII-05,XII,CBG sector reforms,CBG plant milestone status - Mandi Gobindgarh,APD (SWM),,,Partial,,,,Commissioning started,,
+XII-06,XII,CBG sector reforms,CBG plant milestone status - Khanna,APD (SWM),,,Partial,,,,Bid floated,,
+XII-07,XII,CBG sector reforms,CBG plant milestone status - Moga,APD (SWM),,,Not started,,,,Scouting approx 3 acres - land is the binding constraint,,
+XII-08,XII,CBG sector reforms,CBG plant milestone status - Mohali cluster (Kharar/Zirakpur/Mohali),APD (SWM),,,Not started,,,,300 TPD proposed under UCF scheme,,
+XII-09,XII,CBG sector reforms,Land status tracked per city as its own field,APD (SWM),,,Not started,,,,"Land is the deciding constraint - track it separately, not inside narrative",,
+</script>
+<script>
+"use strict";
+const CONFIG = { SHEET_URL:"", SHEET_TAB:"Register", MONEY_TAB:"Expenditure", STALE_DAYS:14 };
+
+/* Punjab-specific incentive per the SASCI 2026-27 guidelines. Part I is an
+   allocation rather than an incentive, so it stays out of this pool. */
+
+/* The sheet and form use Met / Partial / Not started. The board speaks compliance. */
+const WORD = { "Met":"Compliant", "Partial":"Partially compliant",
+               "Not started":"Non-compliant", "Not applicable":"Not applicable" };
+
+const PARTS = [
+ {rn:"I", name:"Untied Funds", lead:"DoLG share", status:"ochre", amount:null, owner:"DCFA",
+  role:"National outlay \u20B975,000 Cr. Punjab allocation \u20B91,337 Cr under Annexure I; \u20B9221.63 Cr routed through DoLG to ULBs.",
+  facts:["Released in two instalments \u2014 66% on the mandatory conditions, 34% on utilising at least 75% of the first.",
+         "The second instalment also requires every CSS Single Nodal Agency account closed, unspent Central share and interest returned to the Consolidated Fund of India, and 2020-21 to 2024-25 SASCI projects uploaded on PFMS.",
+         "Funds must be spent on eligible capital works by 31.03.2027. Parking money in intermediate accounts is not treated as expenditure."],
+  actions:["Ludhiana, Jalandhar and Kapurthala continue to carry the bulk of the unspent balance.",
+           "The 75% utilisation trigger is a State-level test that DoLG spend feeds directly.",
+           "Re-appropriate the Khanauri, Cheema and Longowal allocations rather than carrying them as shortfall."]},
+
+ {rn:"II", name:"State Share of CSS and Central Projects", lead:"PD-AMRUT", status:"ochre", amount:191, owner:"PD-AMRUT",
+  role:"National outlay \u20B910,000 Cr, apportioned on each State's Part I share. Punjab's indicative share is about \u20B9191 Cr.",
+  facts:["Covers State share of AMRUT, PMGSY, Jal Jeevan Mission and comparable infrastructure schemes, and of Central rail, metro, highway, power and airport projects.",
+         "First instalment 66% on submitting scheme and project details; second 34% on 75% utilisation evidenced by a Form 12-B UC through PFMS.",
+         "PMIDC identified \u20B9359 Cr under AMRUT 2.0 and \u20B966 Cr under SBM; FD has indicated a materially lower ceiling."],
+  actions:["Submit scheme and project details to trigger the first instalment.",
+           "Start the Form 12-B utilisation certificate now rather than at the 75% mark.",
+           "Settle the gap between the amount identified and the ceiling FD has indicated."]},
+
+ {rn:"III", name:"Incentives for Capital Expenditure Growth", lead:"DCFA", status:"red", amount:478, owner:"DCFA",
+  role:"National outlay \u20B925,000 Cr, apportioned on the Part I share. Punjab's indicative share of about \u20B9478 Cr is the largest single sum on this board.",
+  facts:["Half turns on capital expenditure growth above 10% in 2025-26 over 2024-25; the other half on growth above 10% across the first six months of 2026-27.",
+         "SASCI releases are excluded in full \u2014 only expenditure from the State's own resources counts.",
+         "Assessed from Statement No. 5 of the State Finance Accounts, or from CAG Monthly Key Indicators where those are unavailable."],
+  actions:["The first-half measurement window closed on 30.09.2026. Establish with FD where Punjab actually landed.",
+           "Confirm in writing whether ULB and Municipal Development Fund capital expenditure counts towards the State figure.",
+           "Because SASCI money is excluded, it is DoLG's own-resource capex that matters here, not scheme spend."]},
+
+ {rn:"IV", name:"Strengthening Public Finance IT Infrastructure", lead:"DoLG contributes", status:"red", amount:200,
+  owner:"CE (Chaudhary), Sr. Manager IT, DCFA",
+  role:"National outlay \u20B94,000 Cr. Four components of \u20B950 Cr each, so \u20B9200 Cr is available to Punjab. Only reforms undertaken during 2026-27 count.",
+  facts:["Component I \u2014 at least six of seven IFMIS modules: e-Sanction, e-Budget, e-Payment, e-Receipt, e-Voucher, e-HRMS and 100% Aadhaar-based DBT.",
+         "Component II \u2014 Works Management System and e-Procurement. Component III \u2014 live integration of IFMIS with both. Component IV \u2014 100% digitisation of DDOs, treasuries and works divisions.",
+         "The report goes to the Comptroller and Auditor General by 15.12.2026, who recommends to the Department of Expenditure by 31.12.2026."],
+  actions:["Several outstanding e-Procurement items are configuration or notification gaps needing no integration \u2014 issue them as a single order.",
+           "Obtain a dated LG-IFMS release plan; Components III and IV cannot be claimed without it.",
+           "The DDO digitisation section of the verification format is still blank, which reads as a failure rather than an omission."]},
+
+ {rn:"V", name:"Mining Sector Reforms", lead:"Mining Dept", status:"grey", amount:null, owner:"Not DoLG",
+  role:"Mine operationalisation, pre-embedded clearance auctions and the State Mining Readiness Index. Nodal Ministry of Mines.",
+  facts:["National outlay \u20B95,000 Cr, released first-come-first-served.",
+         "Owned by the Mining and Geology Department. No Local Government deliverable."],
+  actions:["Monitored only."]},
+
+ {rn:"VI", name:"Right of Way Rules, 2024", lead:"DoLG lead", status:"red", amount:150, owner:"CTP (LG)",
+  role:"National outlay \u20B94,000 Cr. Punjab is Category B with \u20B9150 Cr earmarked, paid as a percentage of that amount against six weighted criteria.",
+  facts:["Orders implementing the Telecommunications Act 2023 and the RoW Rules by the State and by every SPSU and Corporation \u2014 30%.",
+         "BharatNet as a notified Special Project: addendum to the State Support Agreement, no charges for RoW permissions, and deemed permission within 7 days through an online portal \u2014 25%.",
+         "Online State RoW Portal integrated with DoT's Telecom eServices Portal \u2014 15%. Disposal of all backlog filed till 31.03.2026 by 30.09.2026 \u2014 15% at full disposal, 10% above 85%, nil below. Ministry of Power directions on Gram Panchayat connections and the Common Application Form \u2014 10%.",
+         "Average disposal within 45 days for applications filed between 01.07.2026 and 15.11.2026 \u2014 5%."],
+  actions:["The 45-day average the Department has been tracking is worth 5% of \u20B9150 Cr. The remaining 95% has had far less attention.",
+           "BharatNet at 25% is the largest single block \u2014 confirm the Support Agreement addendum, zero RoW charges and the 7-day deemed permission provision.",
+           "The State RoW Portal and its DoT integration is worth 15% and has not been raised at all.",
+           "Report to DoT by 15.12.2026."]},
+
+ {rn:"VII", name:"Digital Public Infrastructure for Agriculture", lead:"Agriculture Dept", status:"grey", amount:null, owner:"Not DoLG",
+  role:"AgriStack \u2014 Farmer Registry, Digital Crop Survey, geo-referenced village maps and plot segment mapping. Nodal DA&FW.",
+  facts:["National outlay \u20B913,000 Cr across four components.",
+         "Owned by the Agriculture Department. No Local Government deliverable."],
+  actions:["Monitored only."]},
+
+ {rn:"VIII", name:"Livestock Sector Reforms", lead:"AHD lead", status:"red", amount:200,
+  owner:"DD / Asst. Commissioner (Jain)",
+  role:"National outlay \u20B93,000 Cr. Punjab is Category C with \u20B9200 Cr earmarked. DoLG owns stray dog sterilisation and vaccination.",
+  facts:["At least five of six qualifying criteria must be met, after which the incentive is paid on the performance score out of 170 marks.",
+         "Below 50% of marks pays nothing, 50% to 75% pays half, above 75% pays in full \u2014 so the band boundaries matter more than the marks themselves.",
+         "Dog sterilisation and vaccination carries 10 of the 170 marks on a cliff: below 70% of target scores zero.",
+         "Report to DAHD by 30.11.2026."],
+  actions:["Report the realistic figure to AHD so the wider 170-mark score can be defended on accurate numbers.",
+           "Establish whether ABC centre capacity rather than effort is the binding constraint.",
+           "Model where the State lands against the 50% and 75% boundaries before deciding how hard to push DoLG's 10 marks."]},
+
+ {rn:"IX", name:"Efficiency in Financial Management", lead:"PMIDC", status:"ochre", amount:450,
+  owner:"GM (F&A), PMIDC",
+  role:"National outlay \u20B95,000 Cr. Up to \u20B9450 Cr per State for full SNA SPARSH implementation \u2014 the largest per-State ceiling in the scheme.",
+  facts:["Eight qualifying criteria: all CSS onboarded on SPARSH, Aadhaar-based DBT, a State Cyber Treasury with an e-claim module, unspent Central share and SNA interest returned to the CFI, zero treasury float, interest on delayed transfers deposited, and rules amended to dispense with ink-signed bills.",
+         "Disqualified outright if average DDO-to-PFMS bill forwarding exceeds 7 days between 01.04.2026 and 15.12.2026, or if treasury data is not shared regularly for Finance Commission grants.",
+         "Report to the PFMS Division of the Controller General of Accounts by 31.12.2026."],
+  actions:["The 14 SNA closures satisfy one of eight criteria \u2014 confirm the remaining seven with FD before treating this Part as nearly complete.",
+           "The 7-day DDO bill forwarding disqualifier is measured continuously and is not currently being watched.",
+           "Reconcile the bank closure letters against the certificate; two ICICI accounts remain unaccounted for."]},
+
+ {rn:"X", name:"Pride of Hills", lead:"Not applicable", status:"grey", amount:null, owner:"Not applicable",
+  role:"Special development assistance restricted to the nine Hill States. Punjab is not eligible.",
+  facts:["\u20B925,000 Cr earmarked for Arunachal Pradesh, Himachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura and Uttarakhand.",
+         "Punjab does not appear in the allocation table for this Part."],
+  actions:["Not applicable to Punjab."]},
+
+ {rn:"XI", name:"Fiscal Discipline and Fiscal Consolidation", lead:"Finance Dept", status:"grey", amount:200,
+  owner:"FD, monitored by DCFA",
+  role:"National outlay \u20B93,000 Cr. Punjab is Category B with \u20B9200 Cr earmarked. Owned by the Finance Department.",
+  facts:["Scored on debt management, borrowing discipline and transparency in fiscal reporting, out of 100 marks.",
+         "A minimum 60% of marks is needed to qualify at all; the incentive is then proportionate to marks scored.",
+         "Report to the RBI Internal Debt Management Department and the Department of Expenditure by 15.01.2027."],
+  actions:["No DoLG deliverable. Carried on the board so that any dependency surfaces early rather than in January."]},
+
+ {rn:"XII", name:"Compressed Bio Gas Sector Reforms", lead:"DoLG lead", status:"red", amount:175,
+  owner:"CE (Rai), APD (SWM)",
+  role:"National outlay \u20B93,000 Cr. Punjab is Category A \u2014 up to \u20B9100 Cr for policy alignment and \u20B975 Cr on the readiness index, with per-TPD co-financing on top. First-come-first-served.",
+  facts:["Component I requires a notified State CBG Policy carrying all foundational governance reforms, at least three of eight fiscal support measures and at least one of four ecosystem enablers.",
+         "Foundational reforms include a State Nodal Agency, District Level Committees under the Deputy Commissioner, a Single Window Portal with deemed approval, time-bound land and utility approvals, district-wise biomass assessment and a FOM/LFOM market framework.",
+         "Component III pays 30% of the net present value of State support per TPD, capped at \u20B90.75 Cr per TPD, and only where State support is at least \u20B90.60 Cr per TPD.",
+         "Nothing is scored on commissioned plants. Policy, governance and fiscal support earn the incentive."],
+  actions:["A notified State CBG Policy is the gateway to all three components and does not yet exist. This is the single highest-value open item on the board.",
+           "The 26-month plant commissioning timeline does not block the incentive \u2014 this Part is far more winnable than has been assumed.",
+           "Report and claim to MoPNG by 15.12.2026, and the pool is first-come-first-served."]}
+
+];
+const ULBS_FALLBACK = [
+ ["Municipal Council Kapurthala",58278000,0],
+ ["MC Jalandhar",323268000,28473020],
+ ["MC Bhawanigarh",7261320,665961],
+ ["Nagar Panchayat Boha",38148000,8201146],
+ ["MC Ludhiana",449658000,105684054],
+ ["MC Budhlada",53988000,13776607],
+ ["NP Amargarh",8316000,2199583],
+ ["MC Phagwara",73392000,20213314],
+ ["MC Sangrur",44616000,12688860],
+ ["MC Sunam",49830000,15767886],
+ ["MC Malerkotla",53724000,17053296],
+ ["MC Ahmedgarh",30161340,9699431],
+ ["MC Bareta",35376000,12510999],
+ ["MC Sanour",16882140,6029517],
+ ["MC Maur",39732000,14946561],
+ ["MC Sultanpur Lodhi 1 & 2",89166000,39309250],
+ ["NP Kothaguru",20700240,10008286],
+ ["Municipal Committee Maluka",30724320,16841365],
+ ["Nagar Council Mansa",56100000,32863168],
+ ["MC Dhanaula",24035880,14157666],
+ ["Improvement Trust Batala",56892000,36208726],
+ ["MC SAS Nagar",64152000,42985250],
+ ["Improvement Trust Pathankot",40128000,27195255],
+ ["MC Amritsar",128106000,100689403],
+ ["Improvement Trust Ropar",45672000,37406021],
+ ["MC Bucho Mandi",39930000,34687479],
+ ["MC Moga",47586000,42880281],
+ ["MC Lehragaga",10479480,9818857],
+ ["Nagar Panchayat Dirba",19140660,18160087],
+ ["MC Samana",21288960,20307889],
+ ["NP Moonak",4385700,4350000],
+ ["MC Raikot",46332000,46289392],
+ ["MC Ferozpur",37884000,37869631],
+ ["Nagar Council Kot Fatta",7943100,7943100],
+ ["NP Kot Shamir",26351820,26351820],
+ ["NP Bholath",29172000,29172000],
+ ["NP Dhilwan",8580000,8580000],
+ ["MC Rajpura",9397080,9397080],
+ ["MC Barnala",69564000,69564000]
+];
+const DEADLINES = [
+ {d:"30 Sep 2026", away:"passed", crit:true, what:"Part VI \u2014 disposal of all RoW backlog filed till 31.03.2026 (worth 15% of \u20B9150 Cr)", o:"CTP (LG)"},
+ {d:"30 Sep 2026", away:"passed", crit:true, what:"Part III \u2014 first-half capital expenditure growth window closed (\u20B9478 Cr)", o:"DCFA"},
+ {d:"30 Sep 2026", away:"passed", crit:true, what:"Part VIII \u2014 dog sterilisation and vaccination target of 62,000", o:"DD / Asst. Commissioner"},
+ {d:"15 Nov 2026", away:"", crit:false, what:"Part VI \u2014 close of window for 45-day average RoW disposal (worth 5%)", o:"CTP (LG)"},
+ {d:"30 Nov 2026", away:"", crit:false, what:"Part VIII \u2014 report due to DAHD", o:"AHD with DoLG inputs"},
+ {d:"15 Dec 2026", away:"", crit:true, what:"Part IV \u2014 report due to the Comptroller and Auditor General", o:"Sr. Manager IT / DCFA"},
+ {d:"15 Dec 2026", away:"", crit:true, what:"Part VI \u2014 report due to Department of Telecommunications", o:"CTP (LG)"},
+ {d:"15 Dec 2026", away:"", crit:true, what:"Part XII \u2014 report and incentive claim due to MoPNG", o:"CE (Rai) / APD (SWM)"},
+ {d:"31 Dec 2026", away:"", crit:false, what:"Part IX \u2014 report due to PFMS Division, CGA", o:"GM (F&A), PMIDC"},
+ {d:"15 Jan 2027", away:"", crit:false, what:"Part XI \u2014 report due to RBI IDMD and Department of Expenditure", o:"Finance Department"},
+ {d:"31 Mar 2027", away:"", crit:false, what:"All SASCI 2026-27 funds to be utilised on eligible capital expenditure", o:"DCFA / ULBs"}
+
+];
+
+const AMOUNT = Object.fromEntries(PARTS.map(p=>[p.rn,p.amount]));
+
+const CR=1e7, M_DONE=5, M_LEFT=7, PACE=5/12*100;
+const cr=n=>(n/CR).toFixed(2);
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const num=v=>{const n=parseFloat(String(v).replace(/[^0-9.\-]/g,""));return isNaN(n)?0:n;};
+let REG=[], ULBS=[], LIVE=false, MONEY_AS_ON="11.09.2026";
+
+function parseCSV(t){
+  t=t.replace(/^\uFEFF/,"");const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'&&t[i+1]==='"'){f+='"';i++;}else if(c==='"')q=false;else f+=c;}
+    else if(c==='"')q=true;else if(c===','){row.push(f);f="";}
+    else if(c==='\n'){row.push(f);rows.push(row);row=[];f="";}else if(c!=='\r')f+=c;}
+  if(f.length||row.length){row.push(f);rows.push(row);}
+  if(!rows.length)return[];
+  const head=rows.shift().map(h=>h.trim().toLowerCase());
+  return rows.filter(r=>r.some(v=>v.trim()!=="")).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]||"").trim()])));
+}
+
+/* Script-tag load: no CORS, works from GitHub Pages or a local file alike. */
+function gvizOnce(id,suffix,want,cb){
+  const name="__sasci_cb_"+Date.now()+"_"+Math.floor(Math.random()*1e6);
+  const el=document.createElement("script");let fired=false;
+  const timer=setTimeout(()=>{if(!fired){clean();cb("NO_REPLY");}},15000);
+  function clean(){fired=true;clearTimeout(timer);try{delete window[name];}catch(e){window[name]=undefined;}
+    if(el.parentNode)el.parentNode.removeChild(el);}
+  window[name]=function(resp){
+    clean();
+    if(resp&&resp.status==="error"){const e=(resp.errors&&resp.errors[0])||{};
+      return cb(String(e.detailed_message||e.message||e.reason||"error").replace(/<[^>]*>/g,"").trim());}
+    if(!resp||!resp.table||!resp.table.cols)return cb("No data returned for that tab.");
+    try{
+      const t=resp.table;
+      let head=t.cols.map(c=>String(c.label||"").trim().toLowerCase());
+      let rows=t.rows?t.rows.map(r=>(r.c||[]).map(c=>c?(c.f!=null?String(c.f):(c.v!=null?String(c.v):"")):"")):[];
+      if(!head.filter(Boolean).length&&rows.length)head=rows.shift().map(x=>String(x).trim().toLowerCase());
+      if(head.indexOf(want)<0){for(let k=0;k<Math.min(5,rows.length);k++){
+        if(rows[k].some(v=>String(v).trim().toLowerCase()===want)){
+          head=rows[k].map(x=>String(x).trim().toLowerCase());rows=rows.slice(k+1);break;}}}
+      if(head.indexOf(want)<0)return cb("WRONG_TAB");
+      cb(null,rows.filter(r=>r.some(v=>String(v).trim()!==""))
+                  .map(r=>Object.fromEntries(head.map((hh,i)=>[hh,String(r[i]==null?"":r[i]).trim()]))));
+    }catch(err){cb("Could not read that tab ("+err.message+").");}
+  };
+  el.onerror=()=>{if(!fired){clean();cb("NO_REPLY");}};
+  el.src="https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json;responseHandler:"+name+suffix+"&headers=1&t="+Date.now();
+  document.body.appendChild(el);
+}
+function loadSheet(url,tab,want,done){
+  const m=String(url).match(/spreadsheets\/d\/([\w-]+)/);
+  if(!m)return done("That is not a Google Sheet link.");
+  const tries=[];if(tab)tries.push("&sheet="+encodeURIComponent(tab));
+  const g=String(url).match(/[#&?]gid=(\d+)/);if(g)tries.push("&gid="+g[1]);tries.push("");
+  let i=0,saw=false,last="";
+  (function next(){
+    if(i>=tries.length){
+      if(!saw)return done("The sheet did not reply. Use Share, then General access \u2018Anyone with the link\u2019 as Viewer.");
+      if(last==="WRONG_TAB")return done("No tab has a column headed \u2018"+want+"\u2019. Check the tab is named \u2018"+tab+"\u2019 and row 1 holds the headings.");
+      return done(last);}
+    gvizOnce(m[1],tries[i++],want,(err,rows)=>{
+      if(!err&&rows)return done(null,rows);
+      if(err!=="NO_REPLY")saw=true;last=err;next();});
+  })();
+}
+
+function ring(main,unit,pct,label,cls,hero){
+  const R=44,C=2*Math.PI*R,on=Math.max(0,Math.min(100,pct))*C/100;
+  return '<div class="rb '+cls+(hero?' hero':'')+'"><div class="dial">'+
+    '<svg viewBox="0 0 100 100"><circle class="tk" cx="50" cy="50" r="'+R+'"/>'+
+    '<circle class="fl" cx="50" cy="50" r="'+R+'" stroke-dasharray="'+on.toFixed(1)+' '+C.toFixed(1)+'"/></svg>'+
+    '<div class="val"><b>'+main+'</b>'+(unit?'<i>'+unit+'</i>':'')+'</div></div>'+
+    '<div class="lb">'+label+'</div></div>';
+}
+function bar(k,pct,v,cls){return '<div class="brow"><span class="k">'+esc(k)+'</span><span class="t">'+
+  '<i class="'+cls+'" style="width:'+Math.max(1,Math.min(100,pct))+'%"></i></span><span class="v">'+v+'</span></div>';}
+
+function counts(rows){
+  const t={ok:0,part:0,no:0,na:0,total:0};
+  rows.forEach(r=>{const s=r.status;
+    if(s==="Not applicable")t.na++;
+    else if(s==="Met")t.ok++;
+    else if(s==="Partial")t.part++;
+    else t.no++;});
+  t.total=rows.length-t.na;return t;
+}
+const rowsOfPart=rn=>REG.filter(r=>(r.part||"").toUpperCase()===rn);
+function score(rn){const t=counts(rowsOfPart(rn));return t.total?(t.ok+0.5*t.part)/t.total:0;}
+
+function connect(url,done){
+  loadSheet(url,CONFIG.SHEET_TAB,"item_id",(err,rows)=>{
+    if(err)return done(err);
+    REG=rows;LIVE=true;
+    loadSheet(url,CONFIG.MONEY_TAB,"ulb",(e2,m)=>{
+      let ok=false;
+      if(!e2&&m){const out=m.map(x=>({name:x.ulb||x.name||"",alloc:num(x.allocation||x.alloc),exp:num(x.expenditure||x.exp)}))
+        .filter(x=>x.name&&x.alloc>0);
+        if(out.length){ULBS=out;ok=true;MONEY_AS_ON=(m.map(r=>r.as_on||r["as on"]||"").filter(Boolean)[0])||"";}}
+      done(null,rows.length,ok);});
+  });
+}
+function boot(){
+  REG=parseCSV(document.getElementById('seed').textContent);
+  ULBS=ULBS_FALLBACK.map(([name,alloc,exp])=>({name,alloc,exp}));
+  if(CONFIG.SHEET_URL)return connect(CONFIG.SHEET_URL,()=>render());
+  render();
+}
+
+function render(){
+  document.getElementById('asof').textContent=LIVE?"Live":"31 Aug 2026";
+  document.getElementById('srcline').textContent=LIVE?"reads the register on open":"embedded snapshot";
+  drawHeadline();drawCal();drawTiles();drawWins();drawCapex();drawTable();drawOwners();
+}
+
+/* ── headline ── */
+function drawHeadline(){
+  const A=ULBS.reduce((s,u)=>s+u.alloc,0), E=ULBS.reduce((s,u)=>s+u.exp,0);
+  const util=A?E/A*100:0;
+  document.getElementById('p-money').innerHTML=
+    '<div class="split">'+ring(Math.round(util),"%",util,"Utilisation","c-green",true)+
+    '<div class="stack">'+
+      '<div class="row"><span>Allocated</span><b><small>&#8377;</small>'+cr(A)+' Cr</b></div>'+
+      '<div class="row"><span>Utilised</span><b><small>&#8377;</small>'+cr(E)+' Cr</b></div>'+
+      '<div class="row"><span>Balance</span><b style="color:var(--red)"><small>&#8377;</small>'+cr(A-E)+' Cr</b></div>'+
+    '</div></div>'+
+    (MONEY_AS_ON?'<div class="note">Expenditure figures as on '+esc(MONEY_AS_ON)+'.</div>':'');
+
+  const c=counts(REG);
+  let pot=0, ind=0;
+  Object.keys(AMOUNT).forEach(k=>{const a=AMOUNT[k];if(a==null)return;pot+=a;ind+=a*score(k);});
+  document.getElementById('p-comp').innerHTML=
+    '<div class="split">'+ring(c.total,"",100,"Requirements","c-lime",true)+
+    '<div class="stack">'+
+      '<div class="row"><span>Compliant</span><b style="color:var(--green)">'+c.ok+'</b></div>'+
+      '<div class="row"><span>Partial</span><b style="color:var(--amber)">'+c.part+'</b></div>'+
+      '<div class="row"><span>Non-compliant</span><b style="color:var(--red)">'+c.no+'</b></div>'+
+    '</div></div>'+
+    '<div class="panel-foot"><div>Incentive linked<b><small>&#8377;</small>'+pot.toFixed(0)+' Cr</b></div>'+
+    '<div>Indicated at current level<b style="color:var(--amber)"><small>&#8377;</small>'+ind.toFixed(0)+' Cr</b></div>'+
+    '<div>Realisation<b style="color:var(--amber)">'+Math.round(pot?ind/pot*100:0)+'%</b></div></div>';
+}
+
+function drawCal(){
+  document.getElementById('cal').innerHTML=DEADLINES.map(x=>
+    '<div class="r'+(x.crit?' crit':'')+'"><div class="d">'+esc(x.d)+
+    (x.away?'<small>'+esc(x.away)+'</small>':'')+'</div><div>'+esc(x.what)+
+    '</div><div class="ow">'+esc(x.o)+'</div></div>').join('');
+}
+
+/* ── parts ── */
+let openPart=null;
+function drawTiles(){
+  const el=document.getElementById('tiles');el.innerHTML="";
+  PARTS.forEach((p,i)=>{
+    const t=counts(rowsOfPart(p.rn));p._t=t;
+    let s="s-grey";
+    if(t.total){const sc=(t.ok+0.5*t.part)/t.total;
+      s=sc>=0.8?"s-green":sc>=0.5?"s-teal":sc>=0.25?"s-amber":"s-red";}
+    const amt=AMOUNT[p.rn];
+    const b=document.createElement('button');
+    const na=(p.lead==="Not applicable"||p.lead==="Mining Dept"||p.lead==="Agriculture Dept");
+    b.type="button";b.className="tile "+s+(na?" na":"");b.setAttribute('aria-pressed','false');
+    b.innerHTML='<div class="rn">Part '+p.rn+'</div><div class="nm">'+esc(p.name)+'</div>'+
+      '<div class="sc">'+(t.total?t.ok+'/'+t.total:'&mdash;')+'</div>'+
+      '<div class="amt">'+(amt!=null?'&#8377;'+amt+' Cr':'&nbsp;')+'</div>'+
+      '<div class="lead">'+esc(p.lead)+'</div>';
+    b.addEventListener('click',()=>openDetail(i,b));
+    el.appendChild(b);
+  });
+}
+function openDetail(i,btn){
+  const d=document.getElementById('detail');
+  document.querySelectorAll('.tile').forEach(x=>x.setAttribute('aria-pressed','false'));
+  if(openPart===i){openPart=null;d.className="detail";d.innerHTML="";return;}
+  openPart=i;btn.setAttribute('aria-pressed','true');
+  const p=PARTS[i],t=p._t,amt=AMOUNT[p.rn];
+  const open=rowsOfPart(p.rn).filter(r=>r.status!=="Met"&&r.status!=="Not applicable").slice(0,6);
+  d.className="detail on";
+  d.innerHTML='<h3>Part '+p.rn+' &mdash; '+esc(p.name)+'</h3><div class="meta">'+esc(p.owner)+
+    ' &nbsp;|&nbsp; '+(amt!=null?'&#8377;'+amt+' Cr earmarked for Punjab':'no Punjab incentive pool')+
+    (t.total?' &nbsp;|&nbsp; '+t.ok+' of '+t.total+' compliant, '+t.part+' partial':'')+'</div>'+
+    '<div class="cols"><div><h4>Position</h4><ul>'+p.facts.slice(0,3).map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul></div>'+
+    '<div><h4>Next</h4><ul>'+p.actions.slice(0,3).map(a=>'<li>'+esc(a)+'</li>').join('')+'</ul>'+
+    (open.length?'<h4 style="margin-top:8px">Open items</h4><ul>'+open.map(r=>'<li>'+esc(r.item_id)+
+      ' &mdash; '+esc(r.checklist_item)+' <i>('+esc(WORD[r.status]||r.status)+')</i></li>').join('')+'</ul>':'')+
+    '</div></div>'+'<div class="gl">'+esc(p.role)+'</div>';
+  if(d.scrollIntoView)d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ── biggest gains: what moving one item is worth ── */
+function drawWins(){
+  const out=[];
+  REG.forEach(r=>{
+    const rn=(r.part||"").toUpperCase();
+    if(r.status==="Met"||r.status==="Not applicable")return;
+    const t=counts(rowsOfPart(rn));if(!t.total)return;
+    const amt=AMOUNT[rn];
+    const step=(r.status==="Partial")?0.5:1;
+    const gain=(amt!=null)?amt*step/t.total:0;
+    out.push({r,rn,gain,near:r.status==="Partial",
+      after:t.ok+(r.status==="Partial"?1:1)+"/"+t.total});
+  });
+  out.sort((a,b)=> (b.near-a.near) || (b.gain-a.gain));
+  const el=document.getElementById('wins');
+  if(!out.length){el.innerHTML='<div style="padding:10px 0;color:var(--green);font-weight:600">Everything is compliant.</div>';return;}
+  el.innerHTML='<div class="win hd"><div>Action</div><div class="g">Indicative value</div></div>'+
+    out.slice(0,10).map(w=>{
+      const act=w.r.next_action||w.r.checklist_item;
+      return '<div class="win"><div class="a">'+esc(String(act).slice(0,110))+
+        '<small>Part '+esc(w.rn)+' &middot; '+esc(w.r.item_id)+' &middot; currently '+
+        esc(WORD[w.r.status]||w.r.status).toLowerCase()+
+        (w.r.owner_name||w.r.owner_role?' &middot; '+esc(w.r.owner_name||w.r.owner_role):'')+'</small></div>'+
+        '<div class="g">'+(w.gain>0?'&#8377;'+w.gain.toFixed(2)+' Cr':'+1 compliance')+
+        '<small>'+(w.near?'part complete':'not commenced')+'</small></div></div>';
+    }).join('')+
+    '<div class="note">Indicative value is the Part incentive apportioned across its requirements. Part-completed items appear first.</div>';
+}
+
+/* ── capex ── */
+function rowsOf(){return ULBS.map(u=>{const un=u.alloc-u.exp,pct=u.exp/u.alloc*100,
+  need=un/M_LEFT,ran=u.exp/M_DONE;
+  return{name:u.name,alloc:u.alloc,exp:u.exp,pct,unspent:un,need,mult:ran>0?need/ran:Infinity};});}
+function drawCapex(){
+  const R=rowsOf(),A=R.reduce((s,r)=>s+r.alloc,0),E=R.reduce((s,r)=>s+r.exp,0);
+  const stalled=R.filter(r=>r.pct<25).length;
+  document.getElementById('r-money').innerHTML=
+    ring(R.length,"",100,"ULBs","c-lime")+
+    ring(stalled,"",stalled/R.length*100,"Under 25%","c-red")+
+    ring(R.filter(r=>r.pct>=90).length,"",R.filter(r=>r.pct>=90).length/R.length*100,"Near complete","c-green")+
+    ring(Math.round(E/A*100),"%",E/A*100,"Utilisation","c-teal");
+  const top=R.slice().sort((a,b)=>b.unspent-a.unspent).slice(0,5),mx=top[0]?top[0].unspent:1;
+  document.getElementById('b-unspent').innerHTML=
+    '<div class="sub-h">Largest balances outstanding</div>'+
+    top.map(r=>bar(r.name.replace(/^(Commissioner |Municipal Council |Municipal Corporation |MC |NP |Nagar Council )/,''),
+      r.unspent/mx*100,cr(r.unspent),"f-red")).join('');
+}
+let sortKey='pct',sortDir=1,filter='all';
+const F={all:()=>true,stalled:r=>r.pct<25,behind:r=>r.pct<PACE-10,big:r=>r.unspent>=3*CR,done:r=>r.pct>=90};
+function drawTable(){
+  const list=rowsOf().filter(F[filter]).sort((a,b)=>{const x=a[sortKey],y=b[sortKey];
+    if(typeof x==='string')return x.localeCompare(y)*sortDir;
+    return ((isFinite(x)?x:1e12)-(isFinite(y)?y:1e12))*sortDir;});
+  document.getElementById('ulbb').innerHTML=list.map(r=>{
+    const col=r.pct>=90?'var(--green)':r.pct>=PACE?'var(--teal)':r.pct>=25?'var(--amber)':'var(--red)';
+    const mult=!isFinite(r.mult)?'&mdash;':r.mult.toFixed(1)+'x';
+    const ms=(!isFinite(r.mult)||r.mult>2)?' style="color:var(--red);font-weight:700"':'';
+    return '<tr><td><span class="dot" style="background:'+col+'"></span>'+esc(r.name)+'</td>'+
+      '<td class="num">'+cr(r.alloc)+'</td><td class="num">'+cr(r.exp)+'</td>'+
+      '<td class="num" style="font-weight:700;color:'+col+'">'+r.pct.toFixed(0)+'</td>'+
+      '<td class="num">'+cr(r.unspent)+'</td><td class="num">'+cr(r.need)+'</td>'+
+      '<td class="num"'+ms+'>'+mult+'</td></tr>';}).join('');
+}
+document.querySelectorAll('#ulbt thead th').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k;if(!k)return;
+  sortDir=(sortKey===k)?-sortDir:(k==='name'?1:-1);sortKey=k;drawTable();}));
+document.querySelectorAll('#chips button').forEach(b=>b.addEventListener('click',()=>{
+  filter=b.dataset.f;document.querySelectorAll('#chips button').forEach(x=>x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');drawTable();}));
+
+function drawOwners(){
+  const by={};
+  REG.forEach(r=>{if(r.status==="Not applicable")return;
+    const k=r.owner_name||r.owner_role||"Unassigned";(by[k]=by[k]||[]).push(r);});
+  document.getElementById('owners').innerHTML=Object.entries(by).sort((a,b)=>b[1].length-a[1].length)
+    .map(([k,rs])=>{const ok=rs.filter(r=>r.status==="Met").length;
+      return bar(k,ok/rs.length*100,ok+"/"+rs.length,"f-green");}).join('');
+}
+
+document.getElementById('loadlink').addEventListener('click',()=>{
+  const m=document.getElementById('cmsg'),u=document.getElementById('linkbox').value.trim();
+  if(!u){m.className='msg bad';m.textContent="Paste the sheet link first.";return;}
+  m.className='msg';m.textContent="Reading...";
+  connect(u,(err,n,ok)=>{
+    if(err){m.className='msg bad';m.textContent=err;return;}
+    m.className='msg good';
+    m.textContent="Connected. "+n+" register items. "+(ok?ULBS.length+" ULB rows from the Expenditure tab.":"No Expenditure tab found \u2014 using built-in figures.")+
+"";
+    render();});
+});
+boot();
+
+
+
+
+</script></body></html>
