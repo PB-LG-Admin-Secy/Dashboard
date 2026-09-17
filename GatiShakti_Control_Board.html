@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PM Gati Shakti &mdash; Urban Layers Control Board</title><style>
+:root{
+  --dark:#8A4A22; --dark-d:#6E3A1A; --lime:#E4B98C; --green:#5E8B4C; --teal:#A3A94F;
+  --amber:#D9953A; --red:#B8503A; --track:#EFE5DA; --line:#E5D6C6; --line2:#F1E8DE;
+  --ink:#33261D; --soft:#7D6B5C; --bg:#FAF6F0; --panel:#FFFDFA;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:Aptos,"Aptos Display","Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  font-size:13px;line-height:1.45;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+h1,h2{margin:0;font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 44px}
+.title{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--dark);
+  padding:18px 20px 16px;text-align:center;margin-bottom:12px;position:relative}
+.title .dept{color:var(--soft);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+.title h1{color:var(--dark);font-size:32px;letter-spacing:.01em;line-height:1.05;margin:6px 0 5px;font-weight:600}
+.title .sub{color:var(--soft);font-size:12px;letter-spacing:.02em}
+.title .asof{position:absolute;right:20px;top:18px;font-size:11px;color:var(--soft);text-align:right;line-height:1.5}
+.title .asof b{display:block;color:var(--dark);font-size:12px;font-weight:600}
+details.cx{margin:0 0 8px}
+details.cx summary{cursor:pointer;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--soft);font-weight:600;list-style:none;padding:5px 0}
+details.cx summary::-webkit-details-marker{display:none}
+details.cx summary:before{content:"\25B8 ";color:var(--dark)}
+details.cx[open] summary:before{content:"\25BE "}
+.cb{background:var(--panel);border:1px solid var(--line);padding:14px 16px}
+.cb .rowf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.cb input{flex:1;min-width:240px;font:inherit;font-size:12px;padding:7px 9px;border:1px solid var(--line);background:#FFFCF8}
+.btn{font:inherit;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;
+  padding:8px 15px;background:var(--dark);color:#fff;border:0;cursor:pointer}
+.btn.alt{background:var(--panel);color:var(--dark);border:1px solid var(--dark)}
+.cb .msg{margin:6px 0 0;font-size:11px;color:var(--soft)}
+.cb code{background:#F6ECE1;padding:1px 5px;font-size:11px}
+.cb p{margin:8px 0 0;font-size:12px;color:var(--soft);line-height:1.55}
+.cb .step{font-size:12px;color:var(--ink);margin:10px 0 0;padding-left:20px;position:relative}
+.cb .step:before{content:counter(st);counter-increment:st;position:absolute;left:0;top:2px;
+  font-size:9px;font-weight:700;color:#fff;background:var(--dark);width:14px;height:14px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center}
+.steps{counter-reset:st}
+.tabs{display:flex;margin-bottom:14px;border-bottom:2px solid var(--dark);flex-wrap:wrap}
+.tabs button{font:inherit;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  padding:9px 15px;background:transparent;border:0;border-bottom:3px solid transparent;
+  margin-bottom:-2px;cursor:pointer;color:var(--soft)}
+.tabs button:hover{color:var(--dark)}
+.tabs button[aria-selected="true"]{background:var(--dark);color:#fff}
+.page{display:none}.page.on{display:block}
+.box{background:var(--panel);border:1px solid var(--line);margin-bottom:14px}
+.box>h2{background:var(--dark);color:#fff;font-size:14px;letter-spacing:.08em;text-transform:uppercase;
+  padding:9px 16px;text-align:center;font-weight:600}
+.box.alt>h2{background:var(--dark-d)}
+.box .bd{padding:18px}
+.rings{display:flex;gap:16px;align-items:center;justify-content:space-around;flex-wrap:wrap}
+.rb{text-align:center;flex:1;min-width:88px}
+.dial{position:relative;width:88px;height:88px;margin:0 auto}
+.dial svg{width:100%;height:100%;display:block;overflow:visible}
+.dial .tk{fill:none;stroke:var(--track);stroke-width:8}
+.dial .fl{fill:none;stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+.dial .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;line-height:1}
+.dial .val b{font-size:20px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.dial .val i{font-size:10px;font-style:normal;color:var(--soft);font-weight:500;align-self:flex-start;margin-top:26px;margin-left:1px}
+.rb .lb{font-size:11px;color:var(--soft);margin-top:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.c-lime .fl{stroke:var(--lime)}.c-green .fl{stroke:var(--green)}.c-teal .fl{stroke:var(--teal)}
+.c-amber .fl{stroke:var(--amber)}.c-red .fl{stroke:var(--red)}.c-grey .fl{stroke:#C4B3A3}
+.mx{width:100%;border-collapse:collapse}
+.mx th{background:#F6ECE1;border-bottom:1px solid var(--dark);font-size:11px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--dark);font-weight:600;padding:8px 10px;text-align:left}
+.mx td{border-bottom:1px solid var(--line2);padding:9px 10px;vertical-align:top}
+.mx td.city{font-weight:600;color:var(--dark);white-space:nowrap}
+.mx .cellsub{font-size:10px;color:var(--soft);line-height:1.35;margin-top:2px}
+.mx .none{color:#C4B3A3;font-size:11px;font-style:italic}
+.mx tbody tr:hover{background:#FCF6EF}
+.mxwrap{overflow:auto}
+.brow{display:grid;grid-template-columns:230px 1fr auto;gap:12px;align-items:center;padding:6px 0;font-size:13px}
+@media(max-width:640px){.brow{grid-template-columns:130px 1fr auto}}
+.brow .k{color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .t{background:var(--track);height:14px}
+.brow .t i{display:block;height:100%}
+.brow .v{font-weight:600;min-width:96px;text-align:right}
+.f-green{background:var(--green)}.f-red{background:var(--red)}.f-lime{background:var(--lime)}
+.f-amber{background:var(--amber)}.f-teal{background:var(--teal)}.f-grey{background:#C4B3A3}
+.sub-h{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dark);font-weight:600;margin:18px 0 8px;
+  border-bottom:1px solid var(--line2);padding-bottom:5px}
+.sub-h:first-child{margin-top:0}
+.pk{font-size:12px;font-weight:600;color:var(--ink);margin:14px 0 6px}
+table.dt{width:100%;border-collapse:collapse;font-size:13px}
+.dt th,.dt td{padding:7px 10px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+.dt thead th{background:#F6ECE1;border-bottom:1px solid var(--dark);font-size:11px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--dark);font-weight:600;white-space:nowrap}
+.dt th.num,.dt td.num{text-align:right}
+.dt tbody tr:hover{background:#FCF6EF}
+.dt td.rm{font-size:11px;color:var(--soft);line-height:1.4}
+.tw{overflow:auto;border:1px solid var(--line)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.d-green{background:var(--green)}.d-amber{background:var(--amber)}.d-red{background:var(--red)}.d-grey{background:#C4B3A3}
+.d-teal{background:var(--teal)}
+.pill{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;
+  padding:2px 7px;border:1px solid var(--line);color:var(--soft);background:#FCF6EF;white-space:nowrap}
+.pill.ok{color:var(--green);border-color:var(--green)}
+.pill.warn{color:var(--amber);border-color:var(--amber)}
+.pill.bad{color:var(--red);border-color:var(--red)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{font:inherit;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:500;
+  padding:5px 11px;background:var(--panel);border:1px solid var(--line);cursor:pointer;color:var(--soft)}
+.chips button[aria-pressed="true"]{background:var(--dark);color:#fff;border-color:var(--dark)}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dark);padding:12px 16px;margin-bottom:14px}
+.chead h3{margin:0;font-size:20px;font-weight:600;color:var(--dark)}
+.chead .ce{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+.empty{color:var(--soft);font-size:12px;font-style:italic;padding:6px 0;margin:0}
+.foot{font-size:11px;color:var(--soft);text-align:center;margin-top:18px;line-height:1.6}
+
+.note{font-size:11.5px;color:var(--soft);line-height:1.5;margin:8px 0 0}
+.alerts{display:flex;flex-direction:column;gap:6px}
+.al{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;border:1px solid var(--line2);border-left:3px solid var(--amber);background:#FFFAF1;font-size:12.5px}
+.al.bad{border-left-color:var(--red);background:#FCF3EF}
+.al .dot{margin-top:5px;flex:none}
+.chg{padding:2px 0}
+.ar{display:inline-block;width:16px;font-size:10px;color:var(--soft)}
+.ar.up{color:var(--green)}.ar.down{color:var(--red)}
+.none{color:#C4B3A3;font-size:11px;font-style:italic}
+a.ul,a.dl,#closeCard{color:var(--dark);font-weight:600;text-decoration:none}
+a.ul:hover,a.dl:hover,#closeCard:hover{text-decoration:underline}
+#closeCard{font-weight:500;text-transform:none;letter-spacing:0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filters input,.filters select{font:inherit;font-size:12px;padding:6px 8px;border:1px solid var(--line);background:#FFFCF8;color:var(--ink)}
+.filters input{min-width:200px}
+details.names{margin:0 0 8px 242px;font-size:11.5px;color:var(--soft)}
+details.names summary{cursor:pointer;color:var(--dark);font-size:11px}
+details.names p{margin:4px 0 0;line-height:1.7}
+@media(max-width:640px){details.names{margin-left:0}}
+</style></head><body>
+<div class="wrap">
+
+<div class="title">
+  <div class="asof"><b id="asof">&mdash;</b><span id="srcline"></span></div>
+  <div class="dept">Department of Local Government &middot; Punjab</div>
+  <h1>PM Gati Shakti &mdash; Urban Layers</h1>
+  <div class="sub">State Master Plan Portal &middot; 166 Urban Local Bodies &middot; 24 Layers</div>
+</div>
+
+<details class="cx" id="connect"><summary>Connect sheet</summary><div class="cb">
+  <div class="rowf">
+    <input id="linkbox" type="url" placeholder="Paste the Google Sheet link">
+    <button id="loadlink" class="btn" type="button">Connect</button>
+  </div>
+  <p class="msg" id="cmsg">Share the sheet as <b>Anyone with the link &middot; Viewer</b>. Tabs read:
+    <code>ULBs</code>, <code>Layers</code>, <code>Progress</code>, <code>Actions</code>, <code>Scoring</code> and the form&rsquo;s <code>Form Responses 1</code>.</p>
+</div></details>
+
+<details class="cx" id="howto"><summary>How to update the data</summary><div class="cb">
+  <div class="rowf">
+    <button class="btn alt" data-dl="ulbs" type="button">Download ULBs.csv</button>
+    <button class="btn alt" data-dl="layers" type="button">Download Layers.csv</button>
+    <button class="btn alt" data-dl="progress" type="button">Download Progress.csv</button>
+    <button class="btn alt" data-dl="actions" type="button">Download Actions.csv</button>
+    <button class="btn alt" data-dl="scoring" type="button">Download Scoring.csv</button>
+  </div>
+  <p><b>ULBs report through the Google Form.</b> They pick their district, their ULB and the layer, then the status and the quantities. The review date is filled in by the sheet.</p>
+  <p><b>HQ keeps three tabs by hand:</b> <code>Layers</code> (state position of the 24 layers), <code>Actions</code> and <code>Scoring</code>. <code>Progress</code> holds ULB-wise entries made by HQ; the form adds to it on load.</p>
+  <p><b>Positions carry forward.</b> A ULB only reports what changed. Its last reported status for each layer stays until a newer entry arrives, and a resubmission replaces the earlier one.</p>
+</div></details>
+
+<div class="tabs" id="tabs" role="tablist"></div>
+<div id="weekbar"></div>
+<div id="pages"></div>
+
+<div class="foot">
+  Seeded from the PM Gati Shakti review of 17 September 2026 (road figures as on 16.09.2026). Connect a sheet to run live.<br>
+  Scores: share verified where quantities exist, otherwise points for the status. Layers a ULB has not reported are not counted.
+</div>
+</div>
+
+<script type="text/plain" id="seed-ulbs">
+ulb,district,class
+Amritsar,Amritsar,Municipal Corporation
+Jandiala Guru,Amritsar,Class-II
+Majitha,Amritsar,Class-III
+Ramdass,Amritsar,Class-III
+Ajnala,Amritsar,Nagar Panchayat
+Baba Bakala Sahib,Amritsar,Nagar Panchayat
+Raja Sansi,Amritsar,Nagar Panchayat
+Rayya,Amritsar,Nagar Panchayat
+Barnala,Barnala,Municipal Corporation
+Bhadaur,Barnala,Class-III
+Dhanaula,Barnala,Class-III
+Handiaya,Barnala,Class-III
+Tapa,Barnala,Class-III
+Bathinda,Bathinda,Municipal Corporation
+Bhucho Mandi,Bathinda,Class-II
+Goniana,Bathinda,Class-II
+Maur,Bathinda,Class-II
+Raman,Bathinda,Class-II
+Rampura Phul,Bathinda,Class-II
+Talwandi Sabo,Bathinda,Class-II
+Kotfatta,Bathinda,Class-III
+Sangat Mandi,Bathinda,Class-III
+Bhagta Bhai Ka,Bathinda,Nagar Panchayat
+Bhai Rupa,Bathinda,Nagar Panchayat
+Kot Shamir,Bathinda,Nagar Panchayat
+Kotha Guru,Bathinda,Nagar Panchayat
+Lehra Mohabbat,Bathinda,Nagar Panchayat
+Maluka,Bathinda,Nagar Panchayat
+Mehraj,Bathinda,Nagar Panchayat
+Nathana,Bathinda,Nagar Panchayat
+Faridkot,Faridkot,Class-I
+Kotkapura,Faridkot,Class-I
+Jaitu,Faridkot,Class-II
+Gobindgarh,Fatehgarh Sahib,Class-I
+Bassi Pathana,Fatehgarh Sahib,Class-II
+Sirhind Fatehgarh Sahib,Fatehgarh Sahib,Class-II
+Amloh,Fatehgarh Sahib,Class-III
+Khamano,Fatehgarh Sahib,Nagar Panchayat
+Abohar,Fazilka,Municipal Corporation
+Fazilka,Fazilka,Class-I
+Jalalabad,Fazilka,Class-II
+Arniwala Sheikh Subhan,Fazilka,Nagar Panchayat
+Ferozepur,Ferozepur,Class-I
+Guru Har Sahai,Ferozepur,Class-II
+Talwandi Bhai,Ferozepur,Class-II
+Zira,Ferozepur,Class-II
+Makhu,Ferozepur,Nagar Panchayat
+Mallanwala Khas,Ferozepur,Nagar Panchayat
+Mamdot,Ferozepur,Nagar Panchayat
+Mudki,Ferozepur,Nagar Panchayat
+Batala,Gurdaspur,Municipal Corporation
+Gurdaspur,Gurdaspur,Class-I
+Dhariwal,Gurdaspur,Class-II
+Dinanagar,Gurdaspur,Class-II
+Dera Baba Nanak,Gurdaspur,Class-III
+Fatehgarh Churian,Gurdaspur,Class-III
+Qadian,Gurdaspur,Class-III
+Sri Hargobindpur,Gurdaspur,Class-III
+Hoshiarpur,Hoshiarpur,Municipal Corporation
+Dasuya,Hoshiarpur,Class-II
+Garh Shankar,Hoshiarpur,Class-II
+Mukerian,Hoshiarpur,Class-II
+Talwara,Hoshiarpur,Class-II
+Urmur Tanda,Hoshiarpur,Class-II
+Gardhiwala,Hoshiarpur,Class-III
+Hariana,Hoshiarpur,Class-III
+Sham Churasi,Hoshiarpur,Class-III
+Mahilpur,Hoshiarpur,Nagar Panchayat
+Jalandhar,Jalandhar,Municipal Corporation
+Nakodar,Jalandhar,Class-I
+Adampur,Jalandhar,Class-II
+Bhogpur,Jalandhar,Class-II
+Goraya,Jalandhar,Class-II
+Kartarpur,Jalandhar,Class-II
+Nurmahal,Jalandhar,Class-II
+Phillaur,Jalandhar,Class-II
+Alawalpur,Jalandhar,Class-III
+Bilga,Jalandhar,Nagar Panchayat
+Lohian Khas,Jalandhar,Nagar Panchayat
+Mehatpur,Jalandhar,Nagar Panchayat
+Shahkot,Jalandhar,Nagar Panchayat
+Kapurthala,Kapurthala,Municipal Corporation
+Phagwara,Kapurthala,Municipal Corporation
+Sultanpur Lodhi,Kapurthala,Class-II
+Begowal,Kapurthala,Nagar Panchayat
+Bhulath,Kapurthala,Nagar Panchayat
+Dhilwan,Kapurthala,Nagar Panchayat
+Nadala,Kapurthala,Nagar Panchayat
+Ludhiana,Ludhiana,Municipal Corporation
+Khanna,Ludhiana,Class-I
+Doraha,Ludhiana,Class-II
+Jagraon,Ludhiana,Class-II
+Mullanpur Dakha,Ludhiana,Class-II
+Raikot,Ludhiana,Class-II
+Sahnewal,Ludhiana,Class-II
+Samrala,Ludhiana,Class-II
+Machhiwara,Ludhiana,Class-III
+Payal,Ludhiana,Class-III
+Maloud,Ludhiana,Nagar Panchayat
+Malerkotla,Malerkotla,Class-I
+Ahmedgarh,Malerkotla,Class-II
+Amargarh,Malerkotla,Nagar Panchayat
+Mansa,Mansa,Class-I
+Budhlada,Mansa,Class-II
+Bareta,Mansa,Class-III
+Bhikhi,Mansa,Nagar Panchayat
+Boha,Mansa,Nagar Panchayat
+Joga,Mansa,Nagar Panchayat
+Sardulgarh,Mansa,Nagar Panchayat
+Moga,Moga,Municipal Corporation
+Bagha Purana,Moga,Class-II
+Dharamkot,Moga,Class-II
+Badhni Kalan,Moga,Nagar Panchayat
+Fatehgarh Panjtoor,Moga,Nagar Panchayat
+Kot Isse Khan,Moga,Nagar Panchayat
+Nihal Singh Wala,Moga,Nagar Panchayat
+Pathankot,Pathankot,Municipal Corporation
+Sujanpur,Pathankot,Class-II
+Narot Jaimal Singh,Pathankot,Nagar Panchayat
+Patiala,Patiala,Municipal Corporation
+Nabha,Patiala,Class-I
+Rajpura,Patiala,Class-I
+Samana,Patiala,Class-I
+Patran,Patiala,Class-II
+Sanaur,Patiala,Class-III
+Bhadson,Patiala,Nagar Panchayat
+Devigarh,Patiala,Nagar Panchayat
+Ghagga,Patiala,Nagar Panchayat
+Ghanaur,Patiala,Nagar Panchayat
+Anandpur Sahib,RoopNagar,Class-I
+Kiratpur Sahib,RoopNagar,Class-I
+Nangal,RoopNagar,Class-I
+Roop Nagar,RoopNagar,Class-I
+Chamkaur Sahib,RoopNagar,Class-II
+Morinda,RoopNagar,Class-II
+Sas Nagar,SAS Nagar,Municipal Corporation
+Dera Bassi,SAS Nagar,Class-I
+Kharar,SAS Nagar,Class-I
+Lalru,SAS Nagar,Class-I
+Zirakpur,SAS Nagar,Class-I
+Banur,SAS Nagar,Class-II
+Kurali,SAS Nagar,Class-II
+Nayagaon,SAS Nagar,Class-II
+Gharuan,SAS Nagar,Nagar Panchayat
+Nawan Shahar,SBS Nagar,Class-I
+Banga,SBS Nagar,Class-II
+Balachaur,SBS Nagar,Class-III
+Rahon,SBS Nagar,Class-III
+Sangrur,Sangrur,Class-I
+Sunam,Sangrur,Class-I
+Bhawanigarh,Sangrur,Class-II
+Dhuri,Sangrur,Class-II
+Lehragagga,Sangrur,Class-II
+Longowal,Sangrur,Class-III
+Cheema,Sangrur,Nagar Panchayat
+Dirba,Sangrur,Nagar Panchayat
+Khanauri,Sangrur,Nagar Panchayat
+Moonak,Sangrur,Nagar Panchayat
+Malout,Sri Muktsar Sahib,Class-I
+Sri Muktsar Sahib,Sri Muktsar Sahib,Class-I
+Gidderbaha,Sri Muktsar Sahib,Class-II
+Bariwala,Sri Muktsar Sahib,Nagar Panchayat
+Patti,Tarn Taran,Class-II
+Tarn Taran,Tarn Taran,Class-II
+Bhikhiwind,Tarn Taran,Nagar Panchayat
+Khemkaran,Tarn Taran,Nagar Panchayat
+</script>
+
+<script type="text/plain" id="seed-layers">
+week,no,layer,group,unit,ulbs_submitted,quantity,verified,status,remarks
+17.09.2026,1,Traffic Lights,Mobility,points,7,72,,Data being received,
+17.09.2026,2,Street Lights / Poles,Utilities,points,12,40575,,Data being received,
+17.09.2026,3,Bus Terminals / Shelters,Mobility,points,38,54,,Data being received,35 ULBs and 3 MCs; 50 and 4 points
+17.09.2026,4,Street Furniture,Civic,points,3,8,,Data being received,"6 benches, 2 indoor gyms"
+17.09.2026,5,Government Buildings,Civic,points,48,3266,,Verification pending,"3 MCs (Amritsar, Jalandhar, Ludhiana) 2,350 and 45 ULBs 916; digitisation and verification"
+17.09.2026,6,Slum Clusters,Civic,clusters,27,54,54,Partly uploaded,Verified and approved under BASERA; 54 slums uploaded on portal
+17.09.2026,7,Fire Stations,Civic,points,51,67,,Verification pending,Verification required from ULBs
+17.09.2026,8,Green Belts / Parks,Environment,points,54,4727,,Data being received,"3 MCs: parks 1,966, green belts 27; ULBs: green belts 1,867 (27 ULBs), parks 867 (24 ULBs)"
+17.09.2026,9,Tube-wells,Utilities,points,22,1821,,Data being received,"16 AMRUT towns 1,786 and 6 ULBs 35"
+17.09.2026,10,Water Supply Network,Utilities,km,141,20345,10969,Partly uploaded,Completed 18 ULBs; under digitisation 7; verification pending 116; maps not received 25; verified km uploaded
+17.09.2026,11,Overhead Reservoirs,Utilities,points,,270,,Data being received,
+17.09.2026,12,Canal-based WTPs,Utilities,points,,,,Not started,No data yet
+17.09.2026,13,Treated Water Supply Network,Utilities,km,,,,Not started,No data yet
+17.09.2026,14,Sewerage Network,Utilities,km,138,14855,11037,Partly uploaded,Completed 18 ULBs; under digitisation 14; verification pending 106; maps not received 28; verified km uploaded
+17.09.2026,15,Sewage Treatment Plants,Utilities,points,,39,,Data being received,
+17.09.2026,16,Effluent Treatment Plants,Utilities,points,1,6,,Data being received,
+17.09.2026,17,Storm Water Drainage,Utilities,ULBs,10,10,10,Partly uploaded,10 ULBs already uploaded on portal
+17.09.2026,18,Public Establishments,Civic,points,37,106,,Data being received,"Cremation grounds: 23 ULBs 68, MCs 15; community centres: 11 ULBs 21, MCs 2"
+17.09.2026,19,MSW Processing / Dumping Yards,Environment,sites,147,147,147,Verified,Verified from SWM branch of PMIDC
+17.09.2026,20,Govt Parking Lots,Mobility,points,7,39,,Data being received,4 ULBs 9 and 3 MCs 30
+17.09.2026,21,Roadside Trees,Environment,points,5,60858,,Data being received,
+17.09.2026,22,Ward Boundaries,Boundaries,ULBs,163,163,87,Verification pending,87 verified; 43 pending; 32 in process; 1 submitted to HQ; 3 not received
+17.09.2026,23,MC Boundaries,Boundaries,ULBs,163,163,87,Verification pending,87 verified; 43 pending; 32 in process; 1 submitted to HQ; 3 not received
+17.09.2026,24,MC Roads,Mobility,km,166,26142,5004,Verification pending,Discrepancies found in 62 ULBs and conveyed for rectification
+</script>
+
+<script type="text/plain" id="seed-progress">
+week,ulb,layer,status,digitized,verified,remarks
+17.09.2026,Nathana,MC Roads,Verification pending,7,0,
+17.09.2026,Nihal Singh Wala,MC Roads,Verification pending,8,0,
+17.09.2026,Goniana,MC Roads,Verification pending,9,0,
+17.09.2026,Maluka,MC Roads,Verification pending,10,0,
+17.09.2026,Sri Hargobindpur,MC Roads,Verification pending,10,0,
+17.09.2026,Patti,MC Roads,Verification pending,10,0,
+17.09.2026,Amargarh,MC Roads,Verification pending,10,0,
+17.09.2026,Bariwala,MC Roads,Verification pending,11,0,
+17.09.2026,Lehra Mohabbat,MC Roads,Verification pending,11,0,
+17.09.2026,Kotha Guru,MC Roads,Verification pending,11,0,
+17.09.2026,Kot Isse Khan,MC Roads,Verification pending,12,0,
+17.09.2026,Ghagga,MC Roads,Verification pending,13,0,
+17.09.2026,Longowal,MC Roads,Verification pending,15,0,
+17.09.2026,Lehragagga,MC Roads,Verification pending,16,0,
+17.09.2026,Fatehgarh Churian,MC Roads,Verification pending,17,0,
+17.09.2026,Garh Shankar,MC Roads,Verification pending,17,0,
+17.09.2026,Khemkaran,MC Roads,Verification pending,17,0,
+17.09.2026,Bhadaur,MC Roads,Verification pending,17,0,
+17.09.2026,Tapa,MC Roads,Verification pending,17,0,
+17.09.2026,Dhariwal,MC Roads,Verification pending,19,0,
+17.09.2026,Khanauri,MC Roads,Verification pending,20,0,
+17.09.2026,Jalalabad,MC Roads,Verification pending,20,0,
+17.09.2026,Jaitu,MC Roads,Verification pending,22,0,
+17.09.2026,Dhanaula,MC Roads,Verification pending,22,0,
+17.09.2026,Qadian,MC Roads,Verification pending,22,0,
+17.09.2026,Cheema,MC Roads,Verification pending,22,0,
+17.09.2026,Bhagta Bhai Ka,MC Roads,Verification pending,23,0,
+17.09.2026,Bhucho Mandi,MC Roads,Verification pending,23,0,
+17.09.2026,Bhikhiwind,MC Roads,Verification pending,23,0,
+17.09.2026,Dinanagar,MC Roads,Verification pending,26,0,
+17.09.2026,Bhikhi,MC Roads,Verification pending,26,0,
+17.09.2026,Bhawanigarh,MC Roads,Verification pending,27,0,
+17.09.2026,Mehraj,MC Roads,Verification pending,27,0,
+17.09.2026,Mansa,MC Roads,Verification pending,27,0,
+17.09.2026,Moonak,MC Roads,Verification pending,28,0,
+17.09.2026,Devigarh,MC Roads,Verification pending,30,0,
+17.09.2026,Fatehgarh Panjtoor,MC Roads,Verification pending,30,0,
+17.09.2026,Talwandi Bhai,MC Roads,Verification pending,30,0,
+17.09.2026,Dhuri,MC Roads,Verification pending,32,0,
+17.09.2026,Makhu,MC Roads,Verification pending,33,0,
+17.09.2026,Nayagaon,MC Roads,Verification pending,33,0,
+17.09.2026,Dirba,MC Roads,Verification pending,34,0,
+17.09.2026,Mamdot,MC Roads,Verification pending,34,0,
+17.09.2026,Guru Har Sahai,MC Roads,Verification pending,35,0,
+17.09.2026,Bagha Purana,MC Roads,Verification pending,36,0,
+17.09.2026,Ahmedgarh,MC Roads,Verification pending,38,0,
+17.09.2026,Handiaya,MC Roads,Verification pending,38,0,
+17.09.2026,Sunam,MC Roads,Verification pending,38,0,
+17.09.2026,Kotkapura,MC Roads,Verification pending,40,0,
+17.09.2026,Zira,MC Roads,Verification pending,40,0,
+17.09.2026,Gidderbaha,MC Roads,Verification pending,41,0,
+17.09.2026,Rampura Phul,MC Roads,Verification pending,42,0,
+17.09.2026,Mallanwala Khas,MC Roads,Verification pending,43,0,
+17.09.2026,Talwandi Sabo,MC Roads,Verification pending,43,0,
+17.09.2026,Dera Baba Nanak,MC Roads,Verification pending,46,0,
+17.09.2026,Bareta,MC Roads,Verification pending,47,0,
+17.09.2026,Fazilka,MC Roads,Verification pending,47,0,
+17.09.2026,Budhlada,MC Roads,Verification pending,53,0,
+17.09.2026,Majitha,MC Roads,Verification pending,59,0,
+17.09.2026,Badhni Kalan,MC Roads,Verification pending,64,0,
+17.09.2026,Arniwala Sheikh Subhan,MC Roads,Verification pending,65,0,
+17.09.2026,Sangrur,MC Roads,Verification pending,69,0,
+17.09.2026,Dharamkot,MC Roads,Verification pending,69,0,
+17.09.2026,Mudki,MC Roads,Verification pending,89,0,
+17.09.2026,Machhiwara,MC Roads,Verification pending,117,0,
+17.09.2026,Gharuan,MC Roads,Verification pending,130,0,
+17.09.2026,Sri Muktsar Sahib,MC Roads,Verification pending,181,0,
+17.09.2026,Gurdaspur,MC Roads,Verification pending,197,0,
+17.09.2026,Malout,MC Roads,Verification pending,279,0,
+17.09.2026,Ferozepur,MC Roads,Verification pending,310,0,
+17.09.2026,Batala,MC Roads,Verification pending,499,0,
+17.09.2026,Ludhiana,MC Roads,Verification pending,2521,0,
+17.09.2026,Boha,MC Roads,Verification pending,28,0,
+17.09.2026,Sultanpur Lodhi,MC Roads,Verification pending,82,0,
+17.09.2026,Kotfatta,MC Roads,Verification pending,18,0,
+17.09.2026,Hariana,MC Roads,Verification pending,29,0,
+17.09.2026,Raja Sansi,MC Roads,Verification pending,29,0,
+17.09.2026,Gardhiwala,MC Roads,Verification in progress,31,1,
+17.09.2026,Shahkot,MC Roads,Verification in progress,49,1,
+17.09.2026,Abohar,MC Roads,Verification in progress,486,1,
+17.09.2026,Nabha,MC Roads,Verification in progress,52,1,
+17.09.2026,Kot Shamir,MC Roads,Verification in progress,35,1,
+17.09.2026,Nawan Shahar,MC Roads,Verification in progress,308,1,
+17.09.2026,Talwara,MC Roads,Verification in progress,78,1,
+17.09.2026,Zirakpur,MC Roads,Verification in progress,47,2,
+17.09.2026,Adampur,MC Roads,Verification in progress,72,2,
+17.09.2026,Anandpur Sahib,MC Roads,Verification in progress,63,3,
+17.09.2026,Chamkaur Sahib,MC Roads,Verification in progress,84,3,
+17.09.2026,Mukerian,MC Roads,Verification in progress,64,3,
+17.09.2026,Jandiala Guru,MC Roads,Verification in progress,150,3,
+17.09.2026,Begowal,MC Roads,Verification in progress,37,3,
+17.09.2026,Samrala,MC Roads,Verification in progress,78,4,
+17.09.2026,Pathankot,MC Roads,Verification in progress,691,4,
+17.09.2026,Raikot,MC Roads,Verification in progress,182,4,
+17.09.2026,Morinda,MC Roads,Verification in progress,45,4,
+17.09.2026,Raman,MC Roads,Verification in progress,96,4,
+17.09.2026,Barnala,MC Roads,Verification in progress,523,4,
+17.09.2026,Nangal,MC Roads,Verification in progress,145,4,
+17.09.2026,Faridkot,MC Roads,Verification in progress,138,4,
+17.09.2026,Bhulath,MC Roads,Verification in progress,46,4,
+17.09.2026,Ramdass,MC Roads,Verification in progress,15,5,
+17.09.2026,Nurmahal,MC Roads,Verification in progress,67,5,
+17.09.2026,Kurali,MC Roads,Verification in progress,59,5,
+17.09.2026,Sangat Mandi,MC Roads,Verification in progress,8,5,
+17.09.2026,Kharar,MC Roads,Verification in progress,153,6,
+17.09.2026,Patran,MC Roads,Verification in progress,63,6,
+17.09.2026,Bilga,MC Roads,Verification in progress,56,7,
+17.09.2026,Maur,MC Roads,Verification in progress,46,7,
+17.09.2026,Ajnala,MC Roads,Verification in progress,31,8,
+17.09.2026,Sardulgarh,MC Roads,Verification in progress,90,8,
+17.09.2026,Maloud,MC Roads,Verification in progress,24,9,
+17.09.2026,Alawalpur,MC Roads,Verification in progress,57,9,
+17.09.2026,Urmur Tanda,MC Roads,Verification in progress,165,9,
+17.09.2026,Sujanpur,MC Roads,Verification in progress,95,10,
+17.09.2026,Banur,MC Roads,Verification in progress,81,12,
+17.09.2026,Jagraon,MC Roads,Verification in progress,179,12,
+17.09.2026,Narot Jaimal Singh,MC Roads,Verification in progress,22,13,
+17.09.2026,Baba Bakala Sahib,MC Roads,Verification in progress,57,14,
+17.09.2026,Moga,MC Roads,Verification in progress,676,16,
+17.09.2026,Bhai Rupa,MC Roads,Verification in progress,48,17,
+17.09.2026,Khanna,MC Roads,Verification in progress,424,18,
+17.09.2026,Tarn Taran,MC Roads,Verification in progress,59,19,
+17.09.2026,Joga,MC Roads,Verification in progress,34,20,
+17.09.2026,Mullanpur Dakha,MC Roads,Verification in progress,57,21,
+17.09.2026,Khamano,MC Roads,Verification in progress,43,21,
+17.09.2026,Bhadson,MC Roads,Verification in progress,44,22,
+17.09.2026,Lohian Khas,MC Roads,Verification in progress,37,23,
+17.09.2026,Dhilwan,MC Roads,Verification in progress,66,23,
+17.09.2026,Nakodar,MC Roads,Verification in progress,250,24,
+17.09.2026,Ghanaur,MC Roads,Verification in progress,28,24,
+17.09.2026,Goraya,MC Roads,Verification in progress,69,26,
+17.09.2026,Payal,MC Roads,Verification in progress,54,26,
+17.09.2026,Mehatpur,MC Roads,Verification in progress,50,26,
+17.09.2026,Sham Churasi,MC Roads,Verification in progress,43,28,
+17.09.2026,Nadala,MC Roads,Verification in progress,57,28,
+17.09.2026,Mahilpur,MC Roads,Verification in progress,64,30,
+17.09.2026,Kiratpur Sahib,MC Roads,Verification in progress,41,30,
+17.09.2026,Kartarpur,MC Roads,Verification in progress,70,31,
+17.09.2026,Rayya,MC Roads,Verification in progress,63,32,
+17.09.2026,Sahnewal,MC Roads,Verification in progress,66,33,
+17.09.2026,Phillaur,MC Roads,Verification in progress,64,40,
+17.09.2026,Bhogpur,MC Roads,Verification in progress,77,42,
+17.09.2026,Samana,MC Roads,Verification in progress,290,46,
+17.09.2026,Amloh,MC Roads,Verification in progress,60,48,
+17.09.2026,Doraha,MC Roads,Verification in progress,112,50,
+17.09.2026,Kapurthala,MC Roads,Verification in progress,305,50,
+17.09.2026,Bassi Pathana,MC Roads,Verification in progress,60,51,
+17.09.2026,Lalru,MC Roads,Verification in progress,251,55,
+17.09.2026,Patiala,MC Roads,Verification in progress,1009,61,
+17.09.2026,Sanaur,MC Roads,Verification in progress,115,68,
+17.09.2026,Roop Nagar,MC Roads,Verification in progress,142,70,
+17.09.2026,Balachaur,MC Roads,Verification in progress,132,78,
+17.09.2026,Dasuya,MC Roads,Verification in progress,111,82,
+17.09.2026,Malerkotla,MC Roads,Verification in progress,146,101,
+17.09.2026,Hoshiarpur,MC Roads,Verification in progress,791,104,
+17.09.2026,Rahon,MC Roads,Verification in progress,118,108,
+17.09.2026,Banga,MC Roads,Verification in progress,147,118,
+17.09.2026,Gobindgarh,MC Roads,Verification in progress,241,140,
+17.09.2026,Sirhind Fatehgarh Sahib,MC Roads,Verification in progress,233,175,
+17.09.2026,Bathinda,MC Roads,Verification in progress,1099,180,
+17.09.2026,Rajpura,MC Roads,Verification in progress,311,227,
+17.09.2026,Phagwara,MC Roads,Verification in progress,677,257,
+17.09.2026,Sas Nagar,MC Roads,Verification in progress,661,284,
+17.09.2026,Amritsar,MC Roads,Verification in progress,2734,311,
+17.09.2026,Dera Bassi,MC Roads,Verification in progress,512,421,
+17.09.2026,Jalandhar,MC Roads,Verification in progress,2306,1081,
+17.09.2026,Goniana,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Sangat Mandi,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Bhagta Bhai Ka,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Kot Shamir,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Lehra Mohabbat,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Mehraj,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Mamdot,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Dhariwal,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Dinanagar,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Qadian,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Dasuya,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Talwara,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Hariana,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Adampur,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Nurmahal,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Mansa,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Budhlada,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Bareta,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Joga,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Kot Isse Khan,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Nihal Singh Wala,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Rajpura,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Kiratpur Sahib,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Nayagaon,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Gharuan,Water Supply Network,Not received,,,Layout plan not received
+17.09.2026,Bassi Pathana,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Amloh,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Khamano,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Samana,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Patran,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Lalru,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Malout,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Gidderbaha,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Bariwala,Water Supply Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Sultanpur Lodhi,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Kapurthala,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Phagwara,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Begowal,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Bhulath,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Dhilwan,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Nadala,Water Supply Network,Verification pending,,,Pending at PWSSB / ULB level
+17.09.2026,Jandiala Guru,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Majitha,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Ramdass,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Ajnala,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Baba Bakala Sahib,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Raja Sansi,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Rayya,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhadaur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dhanaula,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Handiaya,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Tapa,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhucho Mandi,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Maur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Raman,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Rampura Phul,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Talwandi Sabo,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kotfatta,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhai Rupa,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kotha Guru,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Maluka,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nathana,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Faridkot,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kotkapura,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Jaitu,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Gobindgarh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Fazilka,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Jalalabad,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Arniwala Sheikh Subhan,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Guru Har Sahai,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Talwandi Bhai,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Zira,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Makhu,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mallanwala Khas,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mudki,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Gurdaspur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dera Baba Nanak,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Fatehgarh Churian,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sri Hargobindpur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Garh Shankar,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mukerian,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Urmur Tanda,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sham Churasi,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mahilpur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nakodar,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhogpur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Goraya,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kartarpur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bilga,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Lohian Khas,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Shahkot,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Doraha,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Jagraon,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mullanpur Dakha,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Raikot,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sahnewal,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Samrala,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Machhiwara,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Payal,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Maloud,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Ahmedgarh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Amargarh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhikhi,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Boha,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sardulgarh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bagha Purana,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dharamkot,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Badhni Kalan,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Fatehgarh Panjtoor,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sujanpur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Narot Jaimal Singh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nabha,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sanaur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhadson,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Devigarh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Ghanaur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nangal,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Roop Nagar,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Chamkaur Sahib,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Morinda,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sangrur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sunam,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhawanigarh,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dhuri,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Lehragagga,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Longowal,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Cheema,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dirba,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Khanauri,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Moonak,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dera Bassi,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kharar,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kurali,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nawan Shahar,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Banga,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Balachaur,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Rahon,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Patti,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Tarn Taran,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhikhiwind,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Khemkaran,Water Supply Network,Verification pending,,,Pending at ULB level
+17.09.2026,Baba Bakala Sahib,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Bhucho Mandi,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Goniana,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Maur,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Raman,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Rampura Phul,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Talwandi Sabo,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Kotfatta,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Sangat Mandi,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Mehraj,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Jalalabad,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Dinanagar,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Dera Baba Nanak,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Hariana,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Sham Churasi,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Nurmahal,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Kapurthala,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Begowal,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Maloud,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Amargarh,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Mansa,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Bagha Purana,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Longowal,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Moonak,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Kharar,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Banga,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Malout,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Gidderbaha,Sewerage Network,Not received,,,Layout plan not received
+17.09.2026,Majitha,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Ramdass,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Ajnala,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Handiaya,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Tapa,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Gobindgarh,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Bassi Pathana,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Amloh,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Khamano,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Ahmedgarh,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Sanaur,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Devigarh,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Ghanaur,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Lalru,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Patti,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Bhikhiwind,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Khemkaran,Sewerage Network,Approval letter pending,,,Approval letter pending
+17.09.2026,Jandiala Guru,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Rayya,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhadaur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dhanaula,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhagta Bhai Ka,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhai Rupa,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kot Shamir,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kotha Guru,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Lehra Mohabbat,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Maluka,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nathana,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Faridkot,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kotkapura,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Jaitu,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Fazilka,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Arniwala Sheikh Subhan,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Guru Har Sahai,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Talwandi Bhai,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Zira,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Makhu,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mallanwala Khas,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mamdot,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mudki,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Gurdaspur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dhariwal,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Fatehgarh Churian,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Qadian,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sri Hargobindpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Garh Shankar,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mukerian,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Talwara,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Urmur Tanda,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mahilpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Adampur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhogpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kartarpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Alawalpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bilga,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Lohian Khas,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mehatpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sultanpur Lodhi,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhulath,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dhilwan,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nadala,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Doraha,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Jagraon,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Mullanpur Dakha,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Raikot,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sahnewal,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Samrala,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Machhiwara,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Payal,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Budhlada,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bareta,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhikhi,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Boha,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Joga,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sardulgarh,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dharamkot,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Badhni Kalan,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Fatehgarh Panjtoor,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kot Isse Khan,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nihal Singh Wala,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sujanpur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Narot Jaimal Singh,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nabha,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Rajpura,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Samana,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Patran,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhadson,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kiratpur Sahib,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Morinda,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sangrur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Sunam,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bhawanigarh,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dhuri,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Lehragagga,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Cheema,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dirba,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Khanauri,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Dera Bassi,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Kurali,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nayagaon,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Gharuan,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Nawan Shahar,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Balachaur,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Rahon,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Bariwala,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Tarn Taran,Sewerage Network,Verification pending,,,Pending at ULB level
+17.09.2026,Amargarh,Ward Boundaries,Not received,,,Boundary data not received
+17.09.2026,Amargarh,MC Boundaries,Not received,,,Boundary data not received
+17.09.2026,Kapurthala,Ward Boundaries,Not received,,,Boundary data not received
+17.09.2026,Kapurthala,MC Boundaries,Not received,,,Boundary data not received
+17.09.2026,Sangat Mandi,Ward Boundaries,Not received,,,Boundary data not received
+17.09.2026,Sangat Mandi,MC Boundaries,Not received,,,Boundary data not received
+17.09.2026,Nathana,Asset data (general),Submitted,,,
+17.09.2026,Nihal Singh Wala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Goniana,Asset data (general),Submitted,,,
+17.09.2026,Maluka,Asset data (general),Submitted,,,
+17.09.2026,Sri Hargobindpur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Patti,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Amargarh,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bariwala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Lehra Mohabbat,Asset data (general),Submitted,,,
+17.09.2026,Kotha Guru,Asset data (general),Submitted,,,
+17.09.2026,Kot Isse Khan,Asset data (general),Submitted,,,
+17.09.2026,Ghagga,Asset data (general),Submitted,,,
+17.09.2026,Longowal,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Lehragagga,Asset data (general),Submitted,,,
+17.09.2026,Fatehgarh Churian,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Garh Shankar,Asset data (general),Submitted,,,
+17.09.2026,Khemkaran,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhadaur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Tapa,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Dhariwal,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Khanauri,Asset data (general),Submitted,,,
+17.09.2026,Jalalabad,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Jaitu,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Dhanaula,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Qadian,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Cheema,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhagta Bhai Ka,Asset data (general),Submitted,,,
+17.09.2026,Bhucho Mandi,Asset data (general),Submitted,,,
+17.09.2026,Bhikhiwind,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Dinanagar,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhikhi,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhawanigarh,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Mehraj,Asset data (general),Submitted,,,
+17.09.2026,Mansa,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Moonak,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Devigarh,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Fatehgarh Panjtoor,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Talwandi Bhai,Asset data (general),Submitted,,,
+17.09.2026,Dhuri,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Makhu,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Nayagaon,Asset data (general),Submitted,,,
+17.09.2026,Dirba,Asset data (general),Submitted,,,
+17.09.2026,Mamdot,Asset data (general),Submitted,,,
+17.09.2026,Guru Har Sahai,Asset data (general),Submitted,,,
+17.09.2026,Bagha Purana,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Ahmedgarh,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Handiaya,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sunam,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Kotkapura,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Zira,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Gidderbaha,Asset data (general),Submitted,,,
+17.09.2026,Rampura Phul,Asset data (general),Submitted,,,
+17.09.2026,Mallanwala Khas,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Talwandi Sabo,Asset data (general),Submitted,,,
+17.09.2026,Dera Baba Nanak,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bareta,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Fazilka,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Budhlada,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Majitha,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Badhni Kalan,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Arniwala Sheikh Subhan,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sangrur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Dharamkot,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Mudki,Asset data (general),Submitted,,,
+17.09.2026,Machhiwara,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Gharuan,Asset data (general),Submitted,,,
+17.09.2026,Sri Muktsar Sahib,Asset data (general),Submitted,,,
+17.09.2026,Gurdaspur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Malout,Asset data (general),Submitted,,,
+17.09.2026,Ferozepur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Batala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Ludhiana,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Boha,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sultanpur Lodhi,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Kotfatta,Asset data (general),Submitted,,,
+17.09.2026,Hariana,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Raja Sansi,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Gardhiwala,Asset data (general),Submitted,,,
+17.09.2026,Shahkot,Asset data (general),Submitted,,,
+17.09.2026,Abohar,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Nabha,Asset data (general),Submitted,,,
+17.09.2026,Kot Shamir,Asset data (general),Submitted,,,
+17.09.2026,Nawan Shahar,Asset data (general),Submitted,,,
+17.09.2026,Talwara,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Zirakpur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Adampur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Anandpur Sahib,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Chamkaur Sahib,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Mukerian,Asset data (general),Submitted,,,
+17.09.2026,Jandiala Guru,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Begowal,Asset data (general),Submitted,,,
+17.09.2026,Samrala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Pathankot,Asset data (general),Submitted,,,
+17.09.2026,Raikot,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Morinda,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Raman,Asset data (general),Submitted,,,
+17.09.2026,Barnala,Asset data (general),Submitted,,,
+17.09.2026,Nangal,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Faridkot,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhulath,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Ramdass,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Nurmahal,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Kurali,Asset data (general),Submitted,,,
+17.09.2026,Sangat Mandi,Asset data (general),Submitted,,,
+17.09.2026,Kharar,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Patran,Asset data (general),Submitted,,,
+17.09.2026,Bilga,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Maur,Asset data (general),Submitted,,,
+17.09.2026,Ajnala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sardulgarh,Asset data (general),Submitted,,,
+17.09.2026,Maloud,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Alawalpur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Urmur Tanda,Asset data (general),Submitted,,,
+17.09.2026,Sujanpur,Asset data (general),Submitted,,,
+17.09.2026,Banur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Jagraon,Asset data (general),Submitted,,,
+17.09.2026,Narot Jaimal Singh,Asset data (general),Submitted,,,
+17.09.2026,Baba Bakala Sahib,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Moga,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhai Rupa,Asset data (general),Submitted,,,
+17.09.2026,Khanna,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Tarn Taran,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Joga,Asset data (general),Submitted,,,
+17.09.2026,Mullanpur Dakha,Asset data (general),Submitted,,,
+17.09.2026,Khamano,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhadson,Asset data (general),Submitted,,,
+17.09.2026,Lohian Khas,Asset data (general),Submitted,,,
+17.09.2026,Dhilwan,Asset data (general),Submitted,,,
+17.09.2026,Nakodar,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Ghanaur,Asset data (general),Submitted,,,
+17.09.2026,Goraya,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Payal,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Mehatpur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sham Churasi,Asset data (general),Submitted,,,
+17.09.2026,Nadala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Mahilpur,Asset data (general),Submitted,,,
+17.09.2026,Kiratpur Sahib,Asset data (general),Submitted,,,
+17.09.2026,Kartarpur,Asset data (general),Submitted,,,
+17.09.2026,Rayya,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sahnewal,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Phillaur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bhogpur,Asset data (general),Submitted,,,
+17.09.2026,Samana,Asset data (general),Submitted,,,
+17.09.2026,Amloh,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Doraha,Asset data (general),Submitted,,,
+17.09.2026,Kapurthala,Asset data (general),Submitted,,,
+17.09.2026,Bassi Pathana,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Lalru,Asset data (general),Submitted,,,
+17.09.2026,Patiala,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sanaur,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Roop Nagar,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Balachaur,Asset data (general),Submitted,,,
+17.09.2026,Dasuya,Asset data (general),Submitted,,,
+17.09.2026,Malerkotla,Asset data (general),Submitted,,,
+17.09.2026,Hoshiarpur,Asset data (general),Submitted,,,
+17.09.2026,Rahon,Asset data (general),Submitted,,,
+17.09.2026,Banga,Asset data (general),Submitted,,,
+17.09.2026,Gobindgarh,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Sirhind Fatehgarh Sahib,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Bathinda,Asset data (general),Submitted,,,
+17.09.2026,Rajpura,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Phagwara,Asset data (general),Submitted,,,
+17.09.2026,Sas Nagar,Asset data (general),Submitted,,,
+17.09.2026,Amritsar,Asset data (general),Submitted,,,
+17.09.2026,Dera Bassi,Asset data (general),Not received,,,"In the data-not-received list, 17.09.2026"
+17.09.2026,Jalandhar,Asset data (general),Submitted,,,
+</script>
+
+<script type="text/plain" id="seed-actions">
+scope,district,layer,item,owner,due,status,notes
+All ULBs,,All layers,Certificate that all listed assets are covered in digitisation and verified,Each ULB,12.12.2026,Open,Portal deadline for all 24 layers
+62 ULBs,,MC Roads,Rectify road digitisation discrepancies conveyed by HQ,Each ULB,,No date,Found in HQ quality assessment
+77 ULBs,,MC Roads,Start verification of digitised roads (0 km verified so far),Each ULB,,No date,"Includes MC Ludhiana (2,521 km) and MC Batala (499 km)"
+25 ULBs,,Water Supply Network,Send water supply layout plans,Each ULB,,No date,See Layers tab for names
+28 ULBs,,Sewerage Network,Send sewerage layout plans,Each ULB,,No date,See Layers tab for names
+116 ULBs,,Water Supply Network,Verify digitised water supply network,ULB / PWSSB,,No date,"9,376 km awaiting verification; 9 ULBs only need the approval letter"
+106 ULBs,,Sewerage Network,Verify digitised sewerage network,ULB / PWSSB,,No date,"3,818 km awaiting verification; 17 ULBs only need the approval letter"
+94 ULBs,,Asset data (general),Send data for the point layers,Each ULB,,No date,"Data-not-received list, 17.09.2026"
+Amargarh,Malerkotla,Ward Boundaries,Send ward and MC boundary data,ULB,,No date,
+Kapurthala,Kapurthala,Ward Boundaries,Send ward and MC boundary data,MC,,No date,
+Sangat Mandi,Bathinda,Ward Boundaries,Send ward and MC boundary data,ULB,,No date,
+State,,Canal-based WTPs,Start data collection for canal-based WTPs and treated water network,PMIDC / PWSSB,,No date,No data received yet
+51 ULBs,,Fire Stations,Verify 67 fire station points,Each ULB,,No date,
+</script>
+
+<script type="text/plain" id="seed-scoring">
+item,value,notes
+Weight: MC Roads,3,Share of digitised road km verified by the ULB
+Weight: Water Supply Network,2,
+Weight: Sewerage Network,2,
+Weight: Ward Boundaries,1,
+Weight: MC Boundaries,1,
+Weight: Asset data (general),1,Has the ULB sent its point-layer data
+Weight: other layers,1,Any other layer reported for a ULB
+Points: Not received,0,
+Points: Received,20,
+Points: Under digitization,30,
+Points: Verification pending,40,
+Points: Verification in progress,60,
+Points: Approval letter pending,80,
+Points: Verified,100,
+Points: Submitted,100,
+Points: Uploaded,100,
+Points: Not applicable,,Not counted
+Good score at or above,70,
+Watch score at or above,40,Below this is Poor
+Poor performers to list,25,How many of the lowest scores to show
+Portal deadline,12.12.2026,Used for the days-left count
+</script>
+
+<script>
+"use strict";
+const CONFIG={SHEET_URL:"",RESPONSE_TABS:["Form Responses 1","Form responses 1"],
+  TABS:{ULBs:"ulb",Layers:"layer",Progress:"ulb",Actions:"item",Scoring:"item"}};
+let D={ulbs:[],layers:[],progress:[],actions:[],scoring:[],responses:[]},LIVE=false,TAB="Overview",WEEK="";
+let UF={q:"",district:"",cls:"",grade:"",sel:""};
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=v=>{const n=parseFloat(String(v==null?"":v).replace(/[^0-9.\-]/g,""));return isNaN(n)?0:n;};
+const has=v=>String(v==null?"":v).trim()!=="";
+const uniq=a=>a.filter((x,i)=>a.indexOf(x)===i);
+
+function parseCSV(t){
+  const rows=[];let row=[],f="",q=false;
+  t=String(t).replace(/\r/g,"").replace(/^\n+/,"").replace(/\n+$/,"");
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else if(c==='"')q=true;
+    else if(c===","){row.push(f);f="";}
+    else if(c==="\n"){row.push(f);rows.push(row);row=[];f="";}
+    else f+=c;}
+  if(f.length||row.length){row.push(f);rows.push(row);}
+  if(!rows.length)return[];
+  const head=rows.shift().map(h=>h.trim().toLowerCase());
+  return rows.filter(r=>r.some(v=>v.trim()!=="")).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]||"").trim()])));
+}
+
+function toCSV(rows){
+  if(!rows.length)return"";
+  const head=Object.keys(rows[0]);
+  const q=v=>{v=String(v==null?"":v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  return head.join(",")+"\n"+rows.map(r=>head.map(h=>q(r[h])).join(",")).join("\n");
+}
+
+function download(name,text){
+  const b=new Blob([text],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function gvizOnce(id,suffix,want,cb){
+  const name="__cb_"+Date.now()+"_"+Math.floor(Math.random()*1e6);
+  const el=document.createElement("script");let fired=false;
+  const timer=setTimeout(()=>{if(!fired){clean();cb("NO_REPLY");}},15000);
+  function clean(){fired=true;clearTimeout(timer);try{delete window[name];}catch(e){window[name]=undefined;}
+    if(el.parentNode)el.parentNode.removeChild(el);}
+  window[name]=function(resp){
+    clean();
+    if(resp&&resp.status==="error"){const e=(resp.errors&&resp.errors[0])||{};
+      return cb(String(e.detailed_message||e.message||e.reason||"error").replace(/<[^>]*>/g,"").trim());}
+    if(!resp||!resp.table||!resp.table.cols)return cb("No data returned.");
+    try{
+      const t=resp.table;
+      let head=t.cols.map(c=>String(c.label||"").trim().toLowerCase());
+      let rows=t.rows?t.rows.map(r=>(r.c||[]).map(c=>c?(c.f!=null?String(c.f):(c.v!=null?String(c.v):"")):"")):[];
+      if(!head.filter(Boolean).length&&rows.length)head=rows.shift().map(x=>String(x).trim().toLowerCase());
+      if(head.indexOf(want)<0){for(let k=0;k<Math.min(5,rows.length);k++){
+        if(rows[k].some(v=>String(v).trim().toLowerCase()===want)){
+          head=rows[k].map(x=>String(x).trim().toLowerCase());rows=rows.slice(k+1);break;}}}
+      if(head.indexOf(want)<0)return cb("WRONG_TAB");
+      cb(null,rows.filter(r=>r.some(v=>String(v).trim()!==""))
+                 .map(r=>Object.fromEntries(head.map((hh,i)=>[hh,String(r[i]==null?"":r[i]).trim()]))));
+    }catch(err){cb("Could not read that tab ("+err.message+").");}
+  };
+  el.onerror=()=>{if(!fired){clean();cb("NO_REPLY");}};
+  el.src="https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json;responseHandler:"+name+suffix+"&headers=1&t="+Date.now();
+  document.body.appendChild(el);
+}
+
+function loadSheet(url,tab,want,done){
+  const m=String(url).match(/spreadsheets\/d\/([\w-]+)/);
+  if(!m)return done("That is not a Google Sheet link.");
+  const tries=[];if(tab)tries.push("&sheet="+encodeURIComponent(tab));tries.push("");
+  let i=0,saw=false,last="";
+  (function next(){
+    if(i>=tries.length){
+      if(!saw)return done("The sheet did not reply. Share it as \u2018Anyone with the link\u2019 as Viewer.");
+      if(last==="WRONG_TAB")return done("Tab \u2018"+tab+"\u2019 has no column headed \u2018"+want+"\u2019.");
+      return done(last);}
+    gvizOnce(m[1],tries[i++],want,(err,rows)=>{
+      if(!err&&rows)return done(null,rows);
+      if(err!=="NO_REPLY")saw=true;last=err;next();});
+  })();
+}
+function connect(url,done){
+  const names=Object.keys(CONFIG.TABS);let i=0,loaded=[],missing=[];
+  (function next(){
+    if(i<names.length){
+      const tab=names[i++];
+      return loadSheet(url,tab,CONFIG.TABS[tab],(err,rows)=>{
+        if(!err&&rows&&rows.length){D[tab.toLowerCase()]=rows;loaded.push(tab);}else missing.push(tab);
+        next();});
+    }
+    let j=0;
+    (function resp(){
+      if(j>=CONFIG.RESPONSE_TABS.length){missing.push("Form Responses 1");return done(null,loaded,missing);}
+      loadSheet(url,CONFIG.RESPONSE_TABS[j++],"district",(err,rows)=>{
+        if(!err&&rows&&rows.length){D.responses=rows;loaded.push("Form responses ("+rows.length+")");return done(null,loaded,missing);}
+        resp();});
+    })();
+  })();
+}
+/* ================= names, weeks ================= */
+const GENERAL="Asset data (general)";
+const nk=s=>String(s==null?"":s).toLowerCase().replace(/[^a-z0-9]/g,"");
+const isNum=v=>/^\s*-?\d/.test(String(v==null?"":v));
+const rnd=v=>{const r=Math.round(v*10)/10;return r.toLocaleString("en-IN");};
+function dparse(d){
+  const m=String(d||"").match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
+  if(m)return new Date(+((m[3].length===2?"20":"")+m[3]),+m[2]-1,+m[1]).getTime();
+  const t=Date.parse(d);return isNaN(t)?0:t;
+}
+function allWeeks(){return uniq(D.progress.concat(D.layers).map(r=>r.week).filter(has)).sort((a,b)=>dparse(a)-dparse(b));}
+function prevWeek(){const w=allWeeks(),i=w.indexOf(WEEK);return i>0?w[i-1]:null;}
+function atWeek(wk,fn){const keep=WEEK;WEEK=wk;const v=fn();WEEK=keep;return v;}
+
+/* ================= Google Form responses ================= */
+function g(r,k){ // tolerant header lookup; also reads city-wise copies such as "ULB (Amritsar)"
+  if(r[k]!=null&&String(r[k]).trim()!=="")return String(r[k]).trim();
+  const kl=k.toLowerCase();
+  const ks=Object.keys(r).filter(x=>{const t=x.toLowerCase().trim();return t===kl||t.indexOf(kl+" (")===0;});
+  for(const x of ks){const v=String(r[x]==null?"":r[x]).trim();if(v)return v;}
+  return "";
+}
+function ddmmyyyy(s){
+  s=String(s||"").trim();if(!s)return"";
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return("0"+m[3]).slice(-2)+"."+("0"+m[2]).slice(-2)+"."+m[1];
+  m=s.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})/);
+  if(m)return("0"+m[1]).slice(-2)+"."+("0"+m[2]).slice(-2)+"."+(m[3].length===2?"20"+m[3]:m[3]);
+  return s;
+}
+function mergeResponses(){
+  if(!D.responses.length)return;
+  const rows=[];
+  D.responses.forEach(r=>{
+    const ulb=g(r,"ULB"),layer=g(r,"Layer");
+    if(!ulb||!layer)return;
+    rows.push({week:ddmmyyyy(g(r,"Week ending")),ulb:ulb,layer:layer,status:g(r,"Status"),
+      digitized:g(r,"Quantity digitized"),verified:g(r,"Quantity verified"),remarks:g(r,"Remarks"),src:"form"});
+  });
+  D.progress=D.progress.concat(rows);   // later rows win, so a resubmission replaces the earlier one
+}
+
+/* ================= current position (carried forward week to week) ================= */
+let CACHE={};
+function current(){
+  const ck="cur|"+WEEK;if(CACHE[ck])return CACHE[ck];
+  const lim=WEEK?dparse(WEEK):Infinity,m={};
+  D.progress.forEach(r=>{
+    if(!has(r.ulb)||!has(r.layer))return;
+    const w=has(r.week)?dparse(r.week):lim;
+    if(w>lim)return;
+    const k=nk(r.ulb)+"|"+nk(r.layer),p=m[k];
+    if(p&&w<p._w)return;
+    const x=Object.assign({},r,{_w:w});
+    if(p){["status","digitized","verified"].forEach(f=>{if(!has(x[f]))x[f]=p[f];});}
+    m[k]=x;
+  });
+  const byU={},byL={};
+  Object.keys(m).forEach(k=>{const r=m[k],u=nk(r.ulb),l=nk(r.layer);
+    (byU[u]=byU[u]||[]).push(r);(byL[l]=byL[l]||[]).push(r);});
+  return CACHE[ck]={all:m,byU:byU,byL:byL};
+}
+function layerState(){
+  const ck="lay|"+WEEK;if(CACHE[ck])return CACHE[ck];
+  const lim=WEEK?dparse(WEEK):Infinity,m={};
+  D.layers.forEach(r=>{const w=has(r.week)?dparse(r.week):lim;if(w>lim||!has(r.layer))return;
+    const k=nk(r.layer);if(m[k]&&w<m[k]._w)return;m[k]=Object.assign({},r,{_w:w});});
+  const list=Object.keys(m).map(k=>m[k]).sort((a,b)=>num(a.no)-num(b.no));
+  return CACHE[ck]={map:m,list:list};
+}
+
+/* ================= scoring (from the Scoring tab) ================= */
+const STATUS_NAMES={"notreceived":"Not received","received":"Received","underdigitization":"Under digitization","verificationpending":"Verification pending",
+  "verificationinprogress":"Verification in progress","approvalletterpending":"Approval letter pending","verified":"Verified","submitted":"Submitted","uploaded":"Uploaded","notapplicable":"Not applicable"};
+const DEFAULT_POINTS={"notreceived":0,"received":20,"underdigitization":30,"verificationpending":40,
+  "verificationinprogress":60,"approvalletterpending":80,"verified":100,"submitted":100,"uploaded":100};
+let SC=null;
+function scoring(){
+  if(SC)return SC;
+  const s={w:{},pts:Object.assign({},DEFAULT_POINTS),na:{"notapplicable":1},good:70,watch:40,poorN:25,deadline:"12.12.2026",defW:1};
+  (D.scoring||[]).forEach(r=>{
+    const it=String(r.item||"").trim(),v=String(r.value==null?"":r.value).trim(),l=it.toLowerCase();
+    let m=it.match(/^weight\s*[:\-]\s*(.+)$/i);
+    if(m){if(/^other layers$/i.test(m[1].trim())){if(isNum(v))s.defW=num(v);}else if(isNum(v))s.w[nk(m[1])]=num(v);return;}
+    m=it.match(/^points\s*[:\-]\s*(.+)$/i);
+    if(m){const k=nk(m[1]);STATUS_NAMES[k]=STATUS_NAMES[k]||m[1].trim();if(isNum(v)){s.pts[k]=num(v);delete s.na[k];}else{delete s.pts[k];s.na[k]=1;}return;}
+    if(/^good/.test(l)&&isNum(v))s.good=num(v);
+    else if(/^watch/.test(l)&&isNum(v))s.watch=num(v);
+    else if(/poor performers/.test(l)&&isNum(v))s.poorN=num(v);
+    else if(/deadline/.test(l)&&has(v))s.deadline=v;
+  });
+  return SC=s;
+}
+function layerScore(r){
+  const S=scoring(),st=nk(r.status);
+  if(S.na[st])return null;
+  const d=num(r.digitized);
+  if(d>0&&isNum(r.verified))return Math.min(100,num(r.verified)/d*100);
+  return st in S.pts?S.pts[st]:null;
+}
+const weightOf=l=>{const S=scoring(),k=nk(l);return k in S.w?S.w[k]:S.defW;};
+function ulbInfo(name){
+  const ck="u|"+WEEK+"|"+nk(name);if(CACHE[ck])return CACHE[ck];
+  const S=scoring(),rows=(current().byU[nk(name)]||[]).slice();
+  let tw=0,ts=0;const parts=[];
+  rows.forEach(r=>{const sc=layerScore(r),w=weightOf(r.layer);
+    parts.push({r:r,sc:sc,w:w});if(sc!=null&&w>0){tw+=w;ts+=w*sc;}});
+  const score=tw?ts/tw:null;
+  const grade=score==null?"\u2014":score>=S.good?"Good":score>=S.watch?"Watch":"Poor";
+  const reasons=parts.filter(p=>p.sc!=null&&p.sc<S.watch&&p.w>0).sort((a,b)=>(b.w*(100-b.sc))-(a.w*(100-a.sc)))
+    .map(p=>reasonText(p.r));
+  const roads=rows.find(r=>nk(r.layer)==="mcroads");
+  return CACHE[ck]={name:name,rows:rows,parts:parts,score:score,grade:grade,reasons:reasons,
+    backlog:roads?Math.max(0,num(roads.digitized)-num(roads.verified)):0};
+}
+function reasonText(r){
+  const d=num(r.digitized);
+  if(d>0&&isNum(r.verified))return r.layer+": "+rnd(num(r.verified))+" of "+rnd(d)+" verified";
+  return r.layer+": "+r.status.toLowerCase();
+}
+const gradeClass=g=>g==="Good"?"ok":g==="Watch"?"warn":g==="Poor"?"bad":"";
+const ulbList=()=>D.ulbs.filter(u=>has(u.ulb));
+function ranked(){
+  const ck="rank|"+WEEK;if(CACHE[ck])return CACHE[ck];
+  return CACHE[ck]=ulbList().map(u=>Object.assign({u:u},ulbInfo(u.ulb))).filter(x=>x.score!=null)
+    .sort((a,b)=>a.score-b.score||b.backlog-a.backlog);
+}
+function poorList(){const S=scoring();return ranked().filter(x=>x.grade==="Poor").slice(0,S.poorN);}
+
+/* ================= display helpers ================= */
+const band=p=>p>=90?"green":p>=70?"teal":p>=40?"amber":"red";
+const fill=p=>"f-"+band(p);
+const cring=p=>"c-"+band(p);
+function ring(main,unit,pct,label,cls){
+  const R=44,C=2*Math.PI*R,on=Math.max(0,Math.min(100,pct))*C/100;
+  return '<div class="rb '+cls+'"><div class="dial"><svg viewBox="0 0 100 100"><circle class="tk" cx="50" cy="50" r="'+R+'"/>'+
+    '<circle class="fl" cx="50" cy="50" r="'+R+'" stroke-dasharray="'+on.toFixed(1)+' '+C.toFixed(1)+'"/></svg>'+
+    '<div class="val"><b>'+main+'</b>'+(unit?'<i>'+unit+'</i>':'')+'</div></div><div class="lb">'+label+'</div></div>';
+}
+function bar(k,pct,v,cls){
+  return '<div class="brow"><span class="k" title="'+esc(k)+'">'+esc(k)+'</span><span class="t">'+
+    '<i class="'+cls+'" style="width:'+Math.max(1,Math.min(100,pct))+'%"></i></span><span class="v">'+v+'</span></div>';
+}
+function statusPill(s){
+  const l=nk(s);let c="warn";
+  if(/^(verified|uploaded|submitted)$/.test(l))c="ok";
+  else if(/notreceived|notstarted/.test(l))c="bad";
+  else if(l==="notapplicable")c="";
+  return '<span class="pill '+c+'">'+esc(s||"\u2014")+'</span>';
+}
+const ulbLink=n=>'<a href="#" class="ul" data-u="'+esc(n)+'">'+esc(n)+'</a>';
+const overdue=a=>(a.status||"").toLowerCase()==="overdue";
+function daysLeft(){
+  const S=scoring(),d=dparse(S.deadline),w=WEEK?dparse(WEEK):Date.now();
+  return d?Math.round((d-w)/864e5):null;
+}
+function sumLayer(layer){
+  const rows=current().byL[nk(layer)]||[];let d=0,v=0,n=0;
+  rows.forEach(r=>{if(isNum(r.digitized)){d+=num(r.digitized);v+=num(r.verified);n++;}});
+  return n?{d:d,v:v,n:n}:null;
+}
+
+/* ================= cross-check alerts ================= */
+function alerts(){
+  const out=[],A=(lvl,t)=>out.push({lvl:lvl,text:t});
+  const U={};ulbList().forEach(u=>{if(U[nk(u.ulb)])A("warn","ULB listed twice in the ULBs tab: "+u.ulb+".");U[nk(u.ulb)]=u;});
+  const LS=layerState().map,known=Object.assign({},LS);known[nk(GENERAL)]=1;
+  const badU=uniq(D.progress.filter(r=>has(r.ulb)&&!U[nk(r.ulb)]).map(r=>r.ulb));
+  if(badU.length)A("bad","Not found in the ULBs tab, so not counted (check spelling): "+badU.slice(0,12).join(", ")+(badU.length>12?" and "+(badU.length-12)+" more":"")+".");
+  const badL=uniq(D.progress.filter(r=>has(r.layer)&&!known[nk(r.layer)]).map(r=>r.layer));
+  if(badL.length)A("bad","Layer names not in the Layers tab: "+badL.join(", ")+".");
+  const cur=current();
+  const over=[],shortV=[];
+  Object.keys(cur.all).forEach(k=>{const r=cur.all[k];
+    if(isNum(r.digitized)&&isNum(r.verified)&&num(r.verified)>num(r.digitized))over.push(r.ulb+" ("+r.layer+")");
+    if(nk(r.status)==="verified"&&isNum(r.digitized)&&isNum(r.verified)&&num(r.verified)<num(r.digitized)*0.95)shortV.push(r.ulb+" ("+r.layer+")");});
+  if(over.length)A("bad","Verified quantity is more than digitised: "+over.slice(0,10).join(", ")+(over.length>10?" and "+(over.length-10)+" more":"")+".");
+  if(shortV.length)A("warn","Marked Verified, but verified quantity is below digitised: "+shortV.slice(0,10).join(", ")+".");
+  layerState().list.forEach(l=>{
+    const s=sumLayer(l.layer);
+    if(s&&num(l.quantity)>0){
+      const dq=Math.abs(s.d-num(l.quantity))/num(l.quantity),dv=num(l.verified)?Math.abs(s.v-num(l.verified))/num(l.verified):0;
+      if(dq>0.01||dv>0.01)A("warn",l.layer+": ULB-wise totals ("+rnd(s.d)+" digitised, "+rnd(s.v)+" verified) differ from the Layers tab ("+rnd(num(l.quantity))+" / "+rnd(num(l.verified))+").");
+    }
+    const rows=cur.byL[nk(l.layer)]||[],nr=rows.filter(r=>nk(r.status)==="notreceived").length;
+    if(nr&&isNum(l.ulbs_submitted)&&!isNum((rows.find(r=>isNum(r.digitized))||{}).digitized)){
+      const exp=ulbList().length-nr;
+      if(exp!==num(l.ulbs_submitted))A("warn",l.layer+": Layers tab says "+l.ulbs_submitted+" ULBs submitted, but "+nr+" ULBs are marked Not received ("+exp+" expected).");
+    }
+  });
+  const seen={},dup=[];
+  D.progress.filter(r=>r.src!=="form").forEach(r=>{const k=nk(r.ulb)+"|"+nk(r.layer)+"|"+r.week;
+    if(seen[k]&&nk(seen[k])!==nk(r.status))dup.push(r.ulb+" ("+r.layer+", "+r.week+")");seen[k]=r.status;});
+  if(dup.length)A("warn","Same ULB and layer entered twice for one week with different status in the Progress tab: "+uniq(dup).slice(0,8).join(", ")+".");
+  const gen=cur.byL[nk(GENERAL)]||[],clash=[];
+  gen.filter(r=>nk(r.status)==="notreceived").forEach(r=>{
+    const others=(cur.byU[nk(r.ulb)]||[]).filter(x=>!/^(mcroads|watersupplynetwork|seweragenetwork|wardboundaries|mcboundaries|assetdatageneral)$/.test(nk(x.layer))&&
+      !/notreceived|notapplicable/.test(nk(x.status))&&x._w>=r._w);
+    if(others.length)clash.push(r.ulb);});
+  if(clash.length)A("warn","Still marked as not sending asset data, but a point layer has since been reported: "+clash.join(", ")+".");
+  return out;
+}
+function alertList(list){
+  if(!list.length)return'<p class="empty">No mismatches found.</p>';
+  return '<div class="alerts">'+list.map(a=>'<div class="al '+a.lvl+'"><span class="dot d-'+(a.lvl==="bad"?"red":"amber")+'"></span><div>'+esc(a.text)+'</div></div>').join("")+'</div>';
+}
+
+/* ================= changes since last review ================= */
+function reviewChanges(){
+  const pw=prevWeek();
+  let h='<div class="box"><h2>Changes Since Last Review</h2><div class="bd">';
+  if(!pw)return h+'<p class="empty">Only one review is loaded ('+esc(WEEK)+'). Changes appear here from the next review.</p></div></div>';
+  const now=current().all,was=atWeek(pw,()=>current().all),items=[];
+  Object.keys(now).forEach(k=>{const a=now[k],b=was[k];
+    if(!b){items.push({t:"new",u:a.ulb,s:a.layer+": "+a.status});return;}
+    const sa=layerScore(a),sb=layerScore(b);
+    if(nk(a.status)!==nk(b.status)||String(a.verified)!==String(b.verified)){
+      const txt=isNum(a.digitized)&&isNum(a.verified)?rnd(num(b.verified||0))+" \u2192 "+rnd(num(a.verified))+" verified":b.status+" \u2192 "+a.status;
+      items.push({t:sa!=null&&sb!=null&&sa<sb?"down":"up",u:a.ulb,s:a.layer+": "+txt});}
+  });
+  const lnow=layerState().map,lwas=atWeek(pw,()=>layerState().map);
+  const lch=Object.keys(lnow).filter(k=>lwas[k]&&(lnow[k].status!==lwas[k].status||lnow[k].quantity!==lwas[k].quantity||lnow[k].verified!==lwas[k].verified));
+  const pNow=poorList().map(x=>x.name),pWas=atWeek(pw,()=>poorList().map(x=>x.name));
+  const left=pWas.filter(x=>pNow.indexOf(x)<0),joined=pNow.filter(x=>pWas.indexOf(x)<0);
+  h+='<p class="note" style="margin-top:0">Week of '+esc(WEEK)+' compared with '+esc(pw)+'.</p>';
+  h+='<div class="rings" style="margin:4px 0 10px">'+
+    ring(items.filter(x=>x.t==="up").length,"",100,"ULB updates forward","c-green")+
+    ring(items.filter(x=>x.t==="down").length,"",items.filter(x=>x.t==="down").length?100:0,"Moved back","c-red")+
+    ring(lch.length,"",lch.length/24*100,"Layers moved","c-teal")+
+    ring(left.length,"",left.length?100:0,"Left poor list","c-green")+'</div>';
+  if(lch.length){h+='<div class="sub-h">State layer position</div>';
+    lch.forEach(k=>{const a=lnow[k],b=lwas[k];h+='<div class="chg"><span class="ar">\u25B6</span><b>'+esc(a.layer)+'</b>: '+
+      esc(b.status)+' \u2192 '+esc(a.status)+(a.verified!==b.verified&&has(a.verified)?' (verified '+esc(b.verified||"0")+' \u2192 '+esc(a.verified)+')':'')+'</div>';});}
+  if(items.length){h+='<div class="sub-h">ULB updates ('+items.length+')</div><div class="tw"><table class="dt"><tbody>';
+    items.slice(0,40).forEach(x=>{h+='<tr><td>'+ulbLink(x.u)+'</td><td><span class="ar '+(x.t==="down"?"down":"up")+'">'+(x.t==="down"?"\u25BC":"\u25B2")+'</span>'+esc(x.s)+'</td></tr>';});
+    h+='</tbody></table></div>'+(items.length>40?'<p class="note">Showing 40 of '+items.length+'.</p>':'');}
+  if(joined.length||left.length)h+='<div class="sub-h">Poor performers list</div>'+
+    (joined.length?'<p class="note"><b>Added:</b> '+joined.map(esc).join(", ")+'</p>':'')+
+    (left.length?'<p class="note"><b>Moved off:</b> '+left.map(esc).join(", ")+'</p>':'');
+  if(!items.length&&!lch.length)h+='<p class="empty">Nothing moved.</p>';
+  return h+'</div></div>';
+}
+
+/* ================= overview ================= */
+function renderOverview(){
+  const LS=layerState(),S=scoring();
+  let h='<div class="box"><h2>State Position</h2><div class="bd"><div class="rings">';
+  const withData=LS.list.filter(l=>num(l.ulbs_submitted)>0||num(l.quantity)>0).length;
+  const full=LS.list.filter(l=>/^(uploaded|verified)$/.test(nk(l.status))).length;
+  const part=LS.list.filter(l=>/partly/.test(nk(l.status))).length;
+  const total=LS.list.length||24;
+  h+=ring(withData+"/"+total,"",withData/total*100,"Layers with data",cring(withData/total*100));
+  h+=ring(full+part+"/"+total,"",(full+part)/total*100,"Layers on portal",cring((full+part)/total*100));
+  const rd=sumLayer("MC Roads")||(LS.map.mcroads?{d:num(LS.map.mcroads.quantity),v:num(LS.map.mcroads.verified)}:null);
+  if(rd&&rd.d)h+=ring(Math.round(rd.v/rd.d*100),"%",rd.v/rd.d*100,"Road km verified",cring(rd.v/rd.d*100));
+  ["watersupplynetwork","seweragenetwork"].forEach((k,i)=>{const l=LS.map[k];
+    if(l&&num(l.quantity))h+=ring(Math.round(num(l.verified)/num(l.quantity)*100),"%",num(l.verified)/num(l.quantity)*100,i?"Sewer km verified":"Water km verified",cring(num(l.verified)/num(l.quantity)*100));});
+  const gen=current().byL[nk(GENERAL)]||[];
+  if(gen.length){const sub=gen.filter(r=>/submitted|received|uploaded|verified/.test(nk(r.status))&&nk(r.status)!=="notreceived").length,n=ulbList().length;
+    h+=ring(sub+"/"+n,"",sub/n*100,"ULBs sent asset data",cring(sub/n*100));}
+  const dl=daysLeft();
+  h+='</div><p class="empty" style="text-align:center;margin-top:12px">'+(full?full+' layer'+(full>1?'s':'')+' fully on the portal, '+part+' partly. ':'')+
+    (dl!=null?'<b style="color:var(--dark);font-style:normal">'+dl+' days</b> to the portal deadline of '+esc(S.deadline)+'.':'')+'</p></div></div>';
+
+  h+=reviewChanges();
+
+  /* district summary */
+  const dists=uniq(ulbList().map(u=>u.district)).sort();
+  const rows=dists.map(d=>{
+    const us=ulbList().filter(u=>u.district===d),inf=us.map(u=>ulbInfo(u.ulb));
+    const sc=inf.filter(x=>x.score!=null);let rdD=0,rdV=0;
+    us.forEach(u=>{const r=(current().byU[nk(u.ulb)]||[]).find(x=>nk(x.layer)==="mcroads");if(r){rdD+=num(r.digitized);rdV+=num(r.verified);}});
+    const cnt=(layer,st)=>us.filter(u=>(current().byU[nk(u.ulb)]||[]).some(x=>nk(x.layer)===nk(layer)&&nk(x.status)===st)).length;
+    return{d:d,n:us.length,avg:sc.length?sc.reduce((p,x)=>p+x.score,0)/sc.length:null,poor:inf.filter(x=>x.grade==="Poor").length,
+      rdD:rdD,rdV:rdV,wsNR:cnt("Water Supply Network","notreceived"),swNR:cnt("Sewerage Network","notreceived"),
+      wsVP:us.filter(u=>(current().byU[nk(u.ulb)]||[]).some(x=>nk(x.layer)==="watersupplynetwork"&&/pending/.test(nk(x.status)))).length,
+      swVP:us.filter(u=>(current().byU[nk(u.ulb)]||[]).some(x=>nk(x.layer)==="seweragenetwork"&&/pending/.test(nk(x.status)))).length,
+      gNR:cnt(GENERAL,"notreceived")};
+  }).sort((a,b)=>(a.avg==null?999:a.avg)-(b.avg==null?999:b.avg));
+  h+='<div class="box"><h2>District Summary</h2><div class="bd"><p class="note" style="margin-top:0">Lowest average ULB score first. Click a district to see its ULBs.</p>'+
+    '<div class="tw"><table class="dt"><thead><tr><th>District</th><th class="num">ULBs</th><th class="num">Avg score</th><th class="num">Poor</th>'+
+    '<th class="num">Road km verified</th><th class="num">Water: no map / pending</th><th class="num">Sewer: no map / pending</th><th class="num">No asset data</th></tr></thead><tbody>';
+  rows.forEach(r=>{const rp=r.rdD?r.rdV/r.rdD*100:null;
+    h+='<tr><td><a href="#" class="dl" data-d="'+esc(r.d)+'">'+esc(r.d)+'</a></td><td class="num">'+r.n+'</td>'+
+      '<td class="num">'+(r.avg!=null?'<span class="dot d-'+band(r.avg)+'"></span><b>'+Math.round(r.avg)+'</b>':'\u2014')+'</td>'+
+      '<td class="num">'+(r.poor||'\u2014')+'</td>'+
+      '<td class="num">'+(rp!=null?Math.round(rp)+'% <span class="rm">('+rnd(r.rdV)+' / '+rnd(r.rdD)+')</span>':'\u2014')+'</td>'+
+      '<td class="num">'+(r.wsNR||'\u2014')+' / '+(r.wsVP||'\u2014')+'</td><td class="num">'+(r.swNR||'\u2014')+' / '+(r.swVP||'\u2014')+'</td>'+
+      '<td class="num">'+(r.gNR||'\u2014')+'</td></tr>';});
+  h+='</tbody></table></div></div></div>';
+
+  /* poor performers preview */
+  const pl=poorList();
+  h+='<div class="box"><h2>Poor Performers</h2><div class="bd">';
+  if(!pl.length)h+='<p class="empty">No ULB is below the Poor line.</p>';
+  else{h+='<p class="note" style="margin-top:0">'+ranked().filter(x=>x.grade==="Poor").length+' ULBs score below '+scoring().watch+
+      '. The ten lowest are below; the full list is in the Poor Performers tab.</p>';
+    pl.slice(0,10).forEach(x=>{h+=bar(x.name+" \u00B7 "+x.u.district,x.score,Math.round(x.score)+" / 100",fill(x.score));});}
+  h+='</div></div>';
+
+  /* actions */
+  const od=D.actions.filter(overdue).length,nd=D.actions.filter(a=>!has(a.due)&&!overdue(a)).length,up=D.actions.filter(a=>has(a.due)&&!overdue(a)).length;
+  h+='<div class="box"><h2>Actions</h2><div class="bd"><div class="chips" id="acChips">'+
+    '<button data-f="all" aria-pressed="true">All ('+D.actions.length+')</button><button data-f="od" aria-pressed="false">Overdue ('+od+')</button>'+
+    '<button data-f="up" aria-pressed="false">With a date ('+up+')</button><button data-f="nd" aria-pressed="false">No date ('+nd+')</button></div>'+
+    '<div class="tw"><table class="dt"><thead><tr><th>Who</th><th>Layer</th><th>Item</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead><tbody id="acBody"></tbody></table></div></div></div>';
+
+  h+='<div class="box"><h2>Cross-check Alerts</h2><div class="bd">'+alertList(alerts())+'</div></div>';
+  return h;
+}
+function actionRows(f,list){
+  let rows=list||D.actions;
+  if(f==="od")rows=rows.filter(overdue);
+  if(f==="nd")rows=rows.filter(a=>!has(a.due)&&!overdue(a));
+  if(f==="up")rows=rows.filter(a=>has(a.due)&&!overdue(a));
+  if(!rows.length)return'<tr><td colspan="6" class="empty">Nothing here.</td></tr>';
+  return rows.map(a=>'<tr><td>'+esc(a.scope)+(has(a.district)?'<div class="rm">'+esc(a.district)+'</div>':'')+'</td><td class="rm">'+esc(a.layer)+'</td>'+
+    '<td>'+esc(a.item)+(has(a.notes)?'<div class="rm">'+esc(a.notes)+'</div>':'')+'</td><td>'+esc(a.owner)+'</td>'+
+    '<td>'+(has(a.due)?esc(a.due):'\u2014')+'</td><td><span class="dot '+(overdue(a)?"d-red":has(a.due)?"d-amber":"d-grey")+'"></span>'+esc(a.status||"Open")+'</td></tr>').join("");
+}
+
+/* ================= layers ================= */
+function renderLayers(){
+  const LS=layerState(),n=ulbList().length;
+  let h='<div class="box"><h2>All '+LS.list.length+' Layers &mdash; State Position</h2><div class="bd"><div class="tw"><table class="dt"><thead><tr>'+
+    '<th class="num">No</th><th>Layer</th><th>Group</th><th class="num">ULBs submitted</th><th class="num">Quantity</th><th class="num">Verified</th><th>Status</th><th>Remarks</th></tr></thead><tbody>';
+  LS.list.forEach(l=>{
+    const vp=num(l.quantity)&&isNum(l.verified)?num(l.verified)/num(l.quantity)*100:null;
+    h+='<tr><td class="num">'+esc(l.no)+'</td><td><b>'+esc(l.layer)+'</b></td><td class="rm">'+esc(l.group)+'</td>'+
+      '<td class="num">'+(isNum(l.ulbs_submitted)?'<span class="dot d-'+band(num(l.ulbs_submitted)/n*100)+'"></span>'+esc(l.ulbs_submitted)+' <span class="rm">/ '+n+'</span>':'\u2014')+'</td>'+
+      '<td class="num">'+(isNum(l.quantity)?rnd(num(l.quantity))+' <span class="rm">'+esc(l.unit)+'</span>':'\u2014')+'</td>'+
+      '<td class="num">'+(vp!=null?rnd(num(l.verified))+' <span class="rm">('+Math.round(vp)+'%)</span>':'\u2014')+'</td>'+
+      '<td>'+statusPill(l.status)+'</td><td class="rm">'+esc(l.remarks)+'</td></tr>';});
+  h+='</tbody></table></div><p class="note">ULBs submitted is shown against all '+n+' ULBs, since each ULB is expected to cover every layer that exists in its area.</p></div></div>';
+
+  const cur=current(),tracked=Object.keys(cur.byL).map(k=>cur.byL[k]).filter(r=>r.length)
+    .sort((a,b)=>num((LS.map[nk(a[0].layer)]||{no:99}).no)-num((LS.map[nk(b[0].layer)]||{no:99}).no));
+  tracked.forEach(rows=>{
+    const layer=rows[0].layer,missing=n-rows.length;
+    h+='<div class="box alt"><h2>'+esc(layer)+' &mdash; ULB-wise</h2><div class="bd">';
+    const s=sumLayer(layer);
+    if(s){h+='<div class="rings" style="margin-bottom:8px">'+ring(Math.round(s.v/s.d*100),"%",s.v/s.d*100,"Km verified",cring(s.v/s.d*100))+
+      ring(rows.filter(r=>num(r.verified)>=num(r.digitized)&&num(r.digitized)>0).length,"",rows.filter(r=>num(r.verified)>=num(r.digitized)&&num(r.digitized)>0).length/rows.length*100,"ULBs fully verified","c-green")+
+      ring(rows.filter(r=>num(r.verified)===0).length,"",rows.filter(r=>num(r.verified)===0).length/rows.length*100,"ULBs at zero","c-red")+'</div>';
+      h+='<div class="sub-h">Largest verification backlogs (km digitised, not yet verified)</div>';
+      const top=rows.map(r=>({r:r,b:num(r.digitized)-num(r.verified)})).filter(x=>x.b>0).sort((a,b)=>b.b-a.b).slice(0,15),mx=top.length?top[0].b:1;
+      top.forEach(x=>{h+=bar(x.r.ulb,x.b/mx*100,rnd(x.b)+" km ("+Math.round(num(x.r.verified)/num(x.r.digitized)*100)+"% done)",fill(num(x.r.verified)/num(x.r.digitized)*100));});
+    }
+    const groups={};rows.forEach(r=>{(groups[r.status||"\u2014"]=groups[r.status||"\u2014"]||[]).push(r);});
+    const order=Object.keys(groups).sort((a,b)=>(layerScore({status:a})==null?50:layerScore({status:a}))-(layerScore({status:b})==null?50:layerScore({status:b})));
+    h+='<div class="sub-h">By status</div>';
+    order.forEach(st=>{const g=groups[st],pc=g.length/n*100;
+      h+=bar(st,pc,g.length+" ULB"+(g.length>1?"s":""),/^(verified|submitted|uploaded)$/.test(nk(st))?"f-green":nk(st)==="notreceived"?"f-red":"f-amber");
+      if(!/^(verified|submitted|uploaded)$/.test(nk(st))||g.length<=20)
+        h+='<details class="names"><summary>Show '+g.length+' ULB'+(g.length>1?'s':'')+'</summary><p>'+
+          g.slice().sort((a,b)=>a.ulb.localeCompare(b.ulb)).map(r=>ulbLink(r.ulb)+(has(r.remarks)&&!/^pending at|^layout plan|^boundary data|^in the data/i.test(r.remarks)?' <span class="rm">('+esc(r.remarks)+')</span>':'')).join(", ")+'</p></details>';});
+    if(missing>0&&!s)h+='<p class="note">'+missing+' ULBs have no entry for this layer yet; they are not counted in any score for it.</p>';
+    h+='</div></div>';
+  });
+  return h;
+}
+
+/* ================= ULBs ================= */
+function ulbFiltered(){
+  const q=nk(UF.q);
+  return ulbList().filter(u=>(!UF.district||u.district===UF.district)&&(!UF.cls||u["class"]===UF.cls)&&
+    (!q||nk(u.ulb).indexOf(q)>=0)&&(!UF.grade||ulbInfo(u.ulb).grade===UF.grade))
+    .map(u=>Object.assign({u:u},ulbInfo(u.ulb)))
+    .sort((a,b)=>(a.score==null?999:a.score)-(b.score==null?999:b.score)||a.name.localeCompare(b.name));
+}
+function statusOf(x,layer){const r=x.rows.find(r=>nk(r.layer)===nk(layer));return r||null;}
+function ulbRowsHTML(){
+  const list=ulbFiltered();
+  const cnt=document.getElementById("ulbCount");if(cnt)cnt.textContent=list.length+" of "+ulbList().length+" ULBs";
+  if(!list.length)return'<tr><td colspan="9" class="empty">No ULB matches.</td></tr>';
+  const cell=(x,l)=>{const r=statusOf(x,l);return r?statusPill(r.status):'<span class="none">\u2014</span>';};
+  return list.map(x=>{const rd=statusOf(x,"MC Roads"),rp=rd&&num(rd.digitized)?num(rd.verified)/num(rd.digitized)*100:null;
+    return '<tr><td>'+ulbLink(x.name)+'</td><td class="rm">'+esc(x.u.district)+'<br>'+esc(x.u["class"])+'</td>'+
+      '<td class="num">'+(rd?rnd(num(rd.verified))+' / '+rnd(num(rd.digitized))+(rp!=null?' <span class="rm">('+Math.round(rp)+'%)</span>':''):'\u2014')+'</td>'+
+      '<td>'+cell(x,"Water Supply Network")+'</td><td>'+cell(x,"Sewerage Network")+'</td><td>'+cell(x,"Ward Boundaries")+'</td><td>'+cell(x,GENERAL)+'</td>'+
+      '<td class="num">'+(x.score!=null?'<span class="dot d-'+band(x.score)+'"></span><b>'+Math.round(x.score)+'</b>':'\u2014')+'</td>'+
+      '<td>'+(gradeClass(x.grade)?'<span class="pill '+gradeClass(x.grade)+'">'+x.grade+'</span>':'\u2014')+'</td></tr>';}).join("");
+}
+function ulbCard(name){
+  const u=ulbList().find(x=>nk(x.ulb)===nk(name));if(!u)return"";
+  const x=ulbInfo(u.ulb),pw=prevWeek(),was=pw?atWeek(pw,()=>ulbInfo(u.ulb)):null;
+  let h='<div class="chead"><h3>'+esc(u.ulb)+'</h3><div class="ce">'+esc(u.district)+' &middot; '+esc(u["class"])+
+    (x.score!=null?' &middot; Score '+Math.round(x.score)+(was&&was.score!=null?' (last review '+Math.round(was.score)+')':''):'')+
+    ' &nbsp;'+(gradeClass(x.grade)?'<span class="pill '+gradeClass(x.grade)+'">'+x.grade+'</span>':'')+
+    ' &nbsp;<a href="#" id="closeCard">close</a></div></div>';
+  h+='<div class="box"><h2>'+esc(u.ulb)+' &mdash; Layer by Layer</h2><div class="bd">';
+  const sc=x.parts.filter(p=>p.sc!=null);
+  if(sc.length){h+='<div class="rings" style="margin-bottom:10px">';
+    sc.forEach(p=>{h+=ring(Math.round(p.sc),"%",p.sc,p.r.layer,cring(p.sc));});h+='</div>';}
+  h+='<div class="tw"><table class="dt"><thead><tr><th>Layer</th><th>Status</th><th class="num">Digitised</th><th class="num">Verified</th><th class="num">Score</th><th class="num">Weight</th>'+
+    (pw?'<th>Last review</th>':'')+'<th>Remarks</th><th>Reported</th></tr></thead><tbody>';
+  x.parts.slice().sort((a,b)=>b.w-a.w).forEach(p=>{const r=p.r,old=was?was.rows.find(o=>nk(o.layer)===nk(r.layer)):null;
+    h+='<tr><td><b>'+esc(r.layer)+'</b></td><td>'+statusPill(r.status)+'</td><td class="num">'+(isNum(r.digitized)?rnd(num(r.digitized)):'\u2014')+'</td>'+
+      '<td class="num">'+(isNum(r.verified)?rnd(num(r.verified)):'\u2014')+'</td><td class="num">'+(p.sc!=null?Math.round(p.sc):'\u2014')+'</td><td class="num">'+p.w+'</td>'+
+      (pw?'<td class="rm">'+(old?esc(old.status)+(isNum(old.verified)?' ('+rnd(num(old.verified))+')':''):'\u2014')+'</td>':'')+
+      '<td class="rm">'+esc(r.remarks)+'</td><td class="rm">'+esc(r.week||"")+(r.src==="form"?' (form)':'')+'</td></tr>';});
+  h+='</tbody></table></div>';
+  const LS=layerState().list,have=x.rows.map(r=>nk(r.layer)),none=LS.filter(l=>have.indexOf(nk(l.layer))<0);
+  if(none.length)h+='<p class="note"><b>No entry yet for:</b> '+none.map(l=>esc(l.layer)).join(", ")+'. These are not counted in the score.</p>';
+  const ac=D.actions.filter(a=>nk(a.scope)===nk(u.ulb));
+  if(ac.length)h+='<div class="sub-h">Actions</div><div class="tw"><table class="dt"><thead><tr><th>Who</th><th>Layer</th><th>Item</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead><tbody>'+actionRows("all",ac)+'</tbody></table></div>';
+  return h+'</div></div>';
+}
+function renderULBs(){
+  const dists=uniq(ulbList().map(u=>u.district)).sort(),cls=uniq(ulbList().map(u=>u["class"])).sort();
+  const opt=(v,list,label)=>'<option value="">'+label+'</option>'+list.map(x=>'<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>').join("");
+  let h=UF.sel?ulbCard(UF.sel):"";
+  h+='<div class="box"><h2>All ULBs</h2><div class="bd"><div class="filters">'+
+    '<input id="fq" type="search" placeholder="Search a ULB" value="'+esc(UF.q)+'">'+
+    '<select id="fd">'+opt(UF.district,dists,"All districts")+'</select>'+
+    '<select id="fc">'+opt(UF.cls,cls,"All classes")+'</select>'+
+    '<select id="fg">'+opt(UF.grade,["Poor","Watch","Good"],"All grades")+'</select>'+
+    '<span id="ulbCount" class="rm"></span></div>'+
+    '<div class="tw"><table class="dt"><thead><tr><th>ULB</th><th>District / class</th><th class="num">Road km verified</th><th>Water supply</th><th>Sewerage</th>'+
+    '<th>Ward boundaries</th><th>Asset data</th><th class="num">Score</th><th>Grade</th></tr></thead><tbody id="ulbBody"></tbody></table></div>'+
+    '<p class="note">Lowest score first. Click a ULB for its layer-by-layer card.</p></div></div>';
+  return h;
+}
+
+/* ================= poor performers ================= */
+function renderPoor(){
+  const S=scoring(),all=ranked().filter(x=>x.grade==="Poor"),pl=poorList();
+  let h='<div class="box"><h2>Poor Performers</h2><div class="bd"><p class="note" style="margin-top:0">'+all.length+' ULBs score below '+S.watch+
+    '. Showing the lowest '+pl.length+' (set in the Scoring tab). Ties are ordered by the larger road verification backlog.</p>';
+  if(!pl.length)h+='<p class="empty">No ULB is below the Poor line.</p>';
+  else{h+='<div class="tw"><table class="dt"><thead><tr><th class="num">#</th><th>ULB</th><th>District</th><th class="num">Score</th><th>What is pulling it down</th></tr></thead><tbody>';
+    pl.forEach((x,i)=>{h+='<tr><td class="num">'+(i+1)+'</td><td>'+ulbLink(x.name)+'<div class="rm">'+esc(x.u["class"])+'</div></td><td>'+esc(x.u.district)+'</td>'+
+      '<td class="num"><span class="dot d-'+band(x.score)+'"></span><b>'+Math.round(x.score)+'</b></td><td class="rm">'+x.reasons.map(esc).join("<br>")+'</td></tr>';});
+    h+='</tbody></table></div>';}
+  h+='</div></div>';
+  const big=ranked().filter(x=>x.backlog>0).sort((a,b)=>b.backlog-a.backlog).slice(0,15),mx=big.length?big[0].backlog:1;
+  if(big.length){h+='<div class="box alt"><h2>Largest Road Verification Backlogs</h2><div class="bd">';
+    big.forEach(x=>{const r=statusOf(x,"MC Roads"),p=num(r.verified)/num(r.digitized)*100;
+      h+=bar(x.name+" \u00B7 "+x.u.district,x.backlog/mx*100,rnd(x.backlog)+" km pending ("+Math.round(p)+"% done)",fill(p));});
+    h+='</div></div>';}
+  h+=scoringBox();
+  return h;
+}
+function scoringBox(){
+  const S=scoring(),fromSheet=(D.scoring||[]).length>0;
+  let h='<div class="box"><h2>How the Score is Worked Out</h2><div class="bd"><p class="note" style="margin-top:0">Read from the <code>Scoring</code> tab'+
+    (fromSheet?'':' (built-in values until a sheet is connected)')+'. For a layer with quantities (such as road km), the score is the share verified. '+
+    'Otherwise the status earns the points below. A ULB\u2019s score is the weighted average of the layers it has entries for.</p>'+
+    '<div class="tw"><table class="dt"><thead><tr><th>Setting</th><th class="num">Value</th></tr></thead><tbody>';
+  Object.keys(S.w).forEach(k=>{const l=layerState().list.find(x=>nk(x.layer)===k);h+='<tr><td>Weight: '+esc(l?l.layer:k===nk(GENERAL)?GENERAL:k)+'</td><td class="num">'+S.w[k]+'</td></tr>';});
+  h+='<tr><td>Weight: any other layer</td><td class="num">'+S.defW+'</td></tr>';
+  Object.keys(S.pts).forEach(k=>{h+='<tr><td>Points: '+esc(STATUS_NAMES[k]||k)+'</td><td class="num">'+S.pts[k]+'</td></tr>';});
+  h+='<tr><td>Good at or above</td><td class="num">'+S.good+'</td></tr><tr><td>Watch at or above (below is Poor)</td><td class="num">'+S.watch+'</td></tr>'+
+    '<tr><td>Poor performers listed</td><td class="num">'+S.poorN+'</td></tr><tr><td>Portal deadline</td><td class="num">'+esc(S.deadline)+'</td></tr>';
+  return h+'</tbody></table></div></div></div>';
+}
+
+/* ================= page shell ================= */
+function renderWeekBar(){
+  const w=allWeeks(),el=document.getElementById("weekbar");if(!el)return;
+  if(w.length<2){el.innerHTML="";return;}
+  el.innerHTML='<div class="chips" style="margin:-4px 0 14px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);font-weight:600;align-self:center;margin-right:4px">Review of</span>'+
+    w.map(x=>'<button data-wk="'+esc(x)+'" aria-pressed="'+(x===WEEK)+'">'+esc(x)+'</button>').join("")+'</div>';
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{WEEK=b.dataset.wk;render();});
+}
+function render(){
+  CACHE={};SC=null;
+  const wk=allWeeks();
+  if(!WEEK||wk.indexOf(WEEK)<0)WEEK=wk.length?wk[wk.length-1]:"";
+  renderWeekBar();
+  const dl=daysLeft();
+  document.getElementById("asof").textContent=WEEK||"\u2014";
+  document.getElementById("srcline").textContent=(LIVE?"connected sheet":"seeded data")+(dl!=null?" \u00B7 "+dl+" days to deadline":"");
+  const names=["Overview","Layers","ULBs","Poor Performers"];
+  if(names.indexOf(TAB)<0)TAB="Overview";
+  document.getElementById("tabs").innerHTML=names.map(n=>'<button role="tab" data-tab="'+n+'" aria-selected="'+(n===TAB)+'">'+n+'</button>').join("");
+  document.getElementById("pages").innerHTML='<div class="page on">'+(TAB==="Overview"?renderOverview():TAB==="Layers"?renderLayers():TAB==="ULBs"?renderULBs():renderPoor())+'</div>';
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;render();window.scrollTo(0,0);});
+  const acb=document.getElementById("acBody");if(acb)acb.innerHTML=actionRows("all");
+  const chips=document.getElementById("acChips");
+  if(chips)chips.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+    document.getElementById("acBody").innerHTML=actionRows(b.dataset.f);});
+  const body=document.getElementById("ulbBody");
+  if(body){body.innerHTML=ulbRowsHTML();
+    const re=()=>{document.getElementById("ulbBody").innerHTML=ulbRowsHTML();bindLinks();};
+    document.getElementById("fq").oninput=e=>{UF.q=e.target.value;re();};
+    document.getElementById("fd").onchange=e=>{UF.district=e.target.value;re();};
+    document.getElementById("fc").onchange=e=>{UF.cls=e.target.value;re();};
+    document.getElementById("fg").onchange=e=>{UF.grade=e.target.value;re();};
+    const cc=document.getElementById("closeCard");if(cc)cc.onclick=e=>{e.preventDefault();UF.sel="";render();};
+  }
+  bindLinks();
+}
+function bindLinks(){
+  document.querySelectorAll("a.ul").forEach(a=>a.onclick=e=>{e.preventDefault();UF.sel=a.dataset.u;TAB="ULBs";render();window.scrollTo(0,0);});
+  document.querySelectorAll("a.dl").forEach(a=>a.onclick=e=>{e.preventDefault();UF.district=a.dataset.d;UF.sel="";UF.q="";UF.grade="";UF.cls="";TAB="ULBs";render();window.scrollTo(0,0);});
+}
+
+function seed(){
+  const p=id=>parseCSV(document.getElementById(id).textContent);
+  D.ulbs=p("seed-ulbs");D.layers=p("seed-layers");D.progress=p("seed-progress");D.actions=p("seed-actions");D.scoring=p("seed-scoring");D.responses=[];
+}
+function boot(){
+  seed();
+  if(CONFIG.SHEET_URL)return connect(CONFIG.SHEET_URL,()=>{LIVE=true;mergeResponses();render();});
+  render();
+}
+document.getElementById("loadlink").onclick=function(){
+  const url=document.getElementById("linkbox").value.trim(),msg=document.getElementById("cmsg");
+  if(!url){msg.textContent="Paste the Google Sheet link first.";return;}
+  msg.textContent="Connecting\u2026";
+  seed();
+  connect(url,(err,loaded,missing)=>{
+    if(err||!loaded.length){msg.textContent=err||"Nothing loaded. Check tab names and sharing.";return;}
+    LIVE=true;mergeResponses();render();
+    msg.textContent="Connected. Loaded: "+loaded.join(", ")+"."+(missing.length?" Not found, seed kept: "+missing.join(", ")+".":"");
+  });
+};
+document.querySelectorAll("[data-dl]").forEach(b=>b.onclick=()=>{
+  const k=b.dataset.dl;
+  download(k.charAt(0).toUpperCase()+k.slice(1)+".csv",toCSV(D[k]));
+});
+boot();
+</script>
+</body></html>
