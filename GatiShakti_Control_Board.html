@@ -1384,7 +1384,7 @@ function renderOverview(){
   const rd=sumLayer("MC Roads")||(LS.map.mcroads?{d:num(LS.map.mcroads.quantity),v:num(LS.map.mcroads.verified)}:null);
   if(rd&&rd.d)h+=ring(Math.round(rd.v/rd.d*100),"%",rd.v/rd.d*100,"Road km verified",cring(rd.v/rd.d*100));
   ["watersupplynetwork","seweragenetwork"].forEach((k,i)=>{const l=LS.map[k];
-    if(l&&num(l.quantity))h+=ring(Math.round(num(l.verified)/num(l.quantity)*100),"%",num(l.verified)/num(l.quantity)*100,i?"Sewer Network km verified":"Water Supply Netowrk km verified",cring(num(l.verified)/num(l.quantity)*100));});
+    if(l&&num(l.quantity))h+=ring(Math.round(num(l.verified)/num(l.quantity)*100),"%",num(l.verified)/num(l.quantity)*100,i?"Sewerage Network km verified":"Water Supply Network km verified",cring(num(l.verified)/num(l.quantity)*100));});
   const gen=current().byL[nk(GENERAL)]||[];
   if(gen.length){const sub=gen.filter(r=>/submitted|received|uploaded|verified/.test(nk(r.status))&&nk(r.status)!=="notreceived").length,n=ulbList().length;
     h+=ring(sub+"/"+n,"",sub/n*100,"ULBs sent asset data",cring(sub/n*100));}
