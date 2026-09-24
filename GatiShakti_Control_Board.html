@@ -1030,7 +1030,7 @@ Portal deadline,12.12.2026,Used for the days-left count
 
 <script>
 "use strict";
-const CONFIG={SHEET_URL:"",RESPONSE_TABS:["Form Responses 1","Form responses 1"],
+const CONFIG={SHEET_URL:"https://docs.google.com/spreadsheets/d/1rOsa4d6aUz8_bfz-2yrKPNkN5qKykVMdAxAvdk-DVCo/edit?usp=sharing",RESPONSE_TABS:["Form Responses 1","Form responses 1"],
   TABS:{ULBs:"ulb",Layers:"layer",Progress:"ulb",Actions:"item",Scoring:"item"}};
 let D={ulbs:[],layers:[],progress:[],actions:[],scoring:[],responses:[]},LIVE=false,TAB="Overview",WEEK="";
 let UF={q:"",district:"",cls:"",grade:"",sel:""};
@@ -1633,7 +1633,17 @@ function seed(){
 }
 function boot(){
   seed();
-  if(CONFIG.SHEET_URL)return connect(CONFIG.SHEET_URL,()=>{LIVE=true;mergeResponses();render();});
+  if(CONFIG.SHEET_URL){
+    const msg=document.getElementById("cmsg");
+    if(msg)msg.textContent="Loading the connected sheet\u2026";
+    render();                                   // show something at once, then replace it with live data
+    return connect(CONFIG.SHEET_URL,(err,loaded,missing)=>{
+      LIVE=true;mergeResponses();render();
+      if(msg)msg.textContent=(loaded&&loaded.length)
+        ?"Connected to the department sheet. Loaded: "+loaded.join(", ")+"."+((missing&&missing.length)?" Not found, seed kept: "+missing.join(", ")+".":"")
+        :"The connected sheet could not be read, so seeded data is shown. Check that the sheet is shared as Anyone with the link, Viewer.";
+    });
+  }
   render();
 }
 document.getElementById("loadlink").onclick=function(){
